@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "713577753540",
+    "firebase_url": "https://campus-d57dc.firebaseio.com",
+    "project_id": "campus-d57dc",
+    "storage_bucket": "campus-d57dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713577753540:android:3ea37218e4ce2efdaf9291",
+        "android_client_info": {
+          "package_name": "com.felix.campus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "713577753540-27q74pjo60o3pvle5v27rb3eaa0dpghi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBh2IItcN9umGGWQhOHxIULMU6NMdyRVNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "713577753540-27q74pjo60o3pvle5v27rb3eaa0dpghi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
