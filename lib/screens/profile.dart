@@ -241,9 +241,12 @@ class _ProfileState extends State<Profile> {
 
   PopupMenuButton getAction (BuildContext context){
     return PopupMenuButton<int>(
+      icon: Icon(Icons.more_horiz, color: Colors.black,),
       itemBuilder: (context) => [
         PopupMenuItem(
+          
           value: 1,
+          
           child: Text('Logout'))
       ],
       onSelected: (value) {

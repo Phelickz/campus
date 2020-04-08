@@ -58,11 +58,13 @@ class AuthenticationState with ChangeNotifier{
 
   void signup(email, password, username){
     signUp(email, password, username);
+    notifyListeners();
   }
   
   void login(email, password,) {
     try{
       signIn(email, password,);
+      notifyListeners();
   } catch (e) {
     print(e);
   }

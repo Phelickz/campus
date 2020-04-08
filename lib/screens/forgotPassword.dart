@@ -28,81 +28,110 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           onPressed: (){Navigator.pop(context);}),
       
       ),
-      body: Form(
-        key: formKey,
+      body: SingleChildScrollView(
               child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            showAlert(),
-            Center(
-              child: Text('Retrieve Password', 
-                style: TextStyle(
-                  fontFamily: "WorkSansSemiBold",
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold
-                ),)),
-                SizedBox(height: 90),
-                Padding(
-                  padding: const EdgeInsets.only(left: 30),
-                  child: Text('Email',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
-                    ),),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 30, right: 10),
-                  child: TextFormField(
-                    validator: EmailValidator.validate,
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      
-                    ),
-                  ),
-                ),
-                SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.only(left: 270),
-                  child: Container(
-                    height: 50,
-                    width: 100,
-                    color: Colors.transparent,
-                    
-                    child: RaisedButton(
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)
-                      ),
-                      child: Text('Submit',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,         
-                          color: Colors.black
-                        ),),
-                      color: Colors.red,
-                      onPressed: (){
-                        final form = formKey.currentState;
-                        form.save();
-                        if (form.validate()) {
-                          try {
-                             _error = 'A reset password link has been sent to ${emailController.text}';
-                            
-                            Provider.of<AuthenticationState>(context, listen: false).forgotPassword(emailController.text);
-                            
-                          } catch (e){
-                            print(e);
-                          }
-                        }
-                        
-                      } 
-                      ),
-                  ),
-                )
-          ],
+                
+                children: <Widget>[
+                  showAlert(),
+                  SizedBox(height: 10),
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.contain,
+              image: AssetImage("assets/images/shutterstock_remember_password.jpg")),
+              
+            color: Colors.white
+          ),
+          
+          height: 210,
+          width: double.infinity,
         ),
+        SizedBox(height: 20,),
+        Form(
+          key: formKey,
+                  child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+                
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 30, top: 10),
+                    child: Text('Enter the email address associated with your account', 
+                      style: TextStyle(
+                        fontFamily: "WorkSansSemiBold",
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold
+                      ),),
+                  )),
+                    SizedBox(height: 50),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(left: 30),
+                    //   child: Text('Email',
+                    //     style: TextStyle(
+                    //       fontSize: 20,
+                    //       fontWeight: FontWeight.bold
+                    //     ),),
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30, right: 10),
+                      child: TextFormField(
+                        validator: EmailValidator.validate,
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintText: 'Enter Email Address',
+                          
+                          filled: true,
+                          fillColor: Colors.white,
+                          
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 270),
+                      child: Container(
+                        height: 50,
+                        width: 100,
+                        color: Colors.transparent,
+                        
+                        child: RaisedButton(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)
+                          ),
+                          child: Text('Submit',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,         
+                              color: Colors.black
+                            ),),
+                          color: Colors.red,
+                          onPressed: (){
+                            final form = formKey.currentState;
+                            form.save();
+                            if (form.validate()) {
+                              try {
+                                 _error = 'A reset password link has been sent to ${emailController.text}';
+                                setState(() {
+                                  _error = _error;
+                                });
+                                Provider.of<AuthenticationState>(context, listen: false).forgotPassword(emailController.text);
+                                // Navigator.push(context, 
+              // MaterialPageRoute(builder: (context) => ForgotPassword()));
+                              } catch (e){
+                                print(e);
+                              }
+                            }
+                            
+                          } 
+                          ),
+                      ),
+                    )
+            ],
+          ),
+        ),]
+              ),
       ),
     );
   }
@@ -135,9 +164,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       );
     }
     return Container(
-      height: 20,
+      height: 0,
       width: double.infinity,
-      color: Colors.white,
+      color: Colors.red,
       child: SizedBox(height: 20));
   }
 }

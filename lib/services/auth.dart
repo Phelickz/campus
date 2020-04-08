@@ -8,6 +8,7 @@ import 'constants.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
+String error;
 
 
 Map<String, String> exposeUser({@required kUsername, @required kUID}) {
@@ -80,7 +81,7 @@ Future<Map<String, String>> signUp(String email, String password, String name) a
 }
 
   Future<Map<String, String>> signIn(String email, String password,) async {
-    String error;
+    
    try{ AuthResult result = await _auth.signInWithEmailAndPassword(
       email: email.trim(), 
       password: password);
