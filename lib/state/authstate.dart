@@ -13,12 +13,14 @@ class AuthenticationState with ChangeNotifier{
   String _uid;
   String _email;
   String _password;
+  String _error;
 
   String get authStatus => _authStatus;
   String get username => _username;
   String get uid => _uid;
   String get email => _email;
   String get password => _password;
+  String get error => _error;
 
   AuthenticationState(){
     clearState();
@@ -58,13 +60,22 @@ class AuthenticationState with ChangeNotifier{
     signUp(email, password, username);
   }
   
-  void login(email, password) {
-    signIn(email, password);
+  void login(email, password,) {
+    try{
+      signIn(email, password,);
+  } catch (e) {
+    print(e);
   }
+  }
+
+  // void loginTest(email, password){
+  //   signInWithEmail(email, password);
+  // }
 
   void logout(){
     clearState();
     signOut();
+    notifyListeners();
   }
 
   currentUser(){
@@ -80,4 +91,16 @@ class AuthenticationState with ChangeNotifier{
   
   }
 
+ checkUser(){
+    isUserSignedIn();
+  }
+
+  void forgotPassword(email){
+    sendPasswordResetEmail(email);
+  }
+
+  getCurrentUser(){
+    getUser();
+    notifyListeners();
+  }
 } 

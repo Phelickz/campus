@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:campus/screens/feedss.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'launch.dart';
+import 'package:provider/provider.dart';
+import 'package:campus/state/authstate.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -14,8 +18,17 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState(){
     super.initState();
     Timer(Duration(seconds: 3), () {
-              Navigator.push(context, 
-              MaterialPageRoute(builder: (context) => Launch()));
+      Provider.of<AuthenticationState>(context, listen: false).currentUser()
+      .then((currentUser) => {
+        if (currentUser == null)
+          {Navigator.push(context, 
+              MaterialPageRoute(builder: (context) => Launch()))}
+        else {
+          Navigator.push(context, 
+              MaterialPageRoute(builder: (context) => Feedss()))
+              .catchError((e) => print(e))
+        }
+      }).catchError((e) => print(e));
             });
   }
 

@@ -1,10 +1,14 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'constants.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
+
 
 Map<String, String> exposeUser({@required kUsername, @required kUID}) {
   print(kUID);
@@ -53,7 +57,7 @@ void onAuthenticationChange(Function isLogin) {
 }
 
 Future<Map<String, String>> signUp(String email, String password, String name) async {
-    AuthResult result = await _auth.createUserWithEmailAndPassword(
+   try{ AuthResult result = await _auth.createUserWithEmailAndPassword(
       email: email.trim(), 
       password: password);
       final FirebaseUser user = result.user;
@@ -70,10 +74,14 @@ Future<Map<String, String>> signUp(String email, String password, String name) a
       print('Account created');
       print('$user.uid');
       return exposeUser(kUsername: user.displayName, kUID: user.uid);   
+  } catch(e){
+    print(e);
   }
+}
 
-  Future<Map<String, String>> signIn(String email, String password) async {
-    AuthResult result = await _auth.signInWithEmailAndPassword(
+  Future<Map<String, String>> signIn(String email, String password,) async {
+    String error;
+   try{ AuthResult result = await _auth.signInWithEmailAndPassword(
       email: email.trim(), 
       password: password);
       final FirebaseUser user = result.user;
@@ -86,4 +94,28 @@ Future<Map<String, String>> signUp(String email, String password, String name) a
       print('signIn succeeded : $user');
       print('User signed in');
       return exposeUser(kUsername: user.displayName, kUID: user.uid);
+  } catch (e){
+    error = e.message;
+    print(error);
   }
+  }
+  
+  //  handleError(PlatformException error) {
+  //   print(error);
+  //   switch (error.code) {
+  //     case 'ERROR_EMAIL_ALREADY_IN_USE':
+  //       setState(() {
+  //         errorMessage = 'Email Id already Exist!!!';
+  //       });
+  //       break;
+  //     default:
+  //   }
+  // }
+
+
+Future sendPasswordResetEmail(String email) async {
+  return _auth.sendPasswordResetEmail(email: email.trim());
+}
+
+
+  

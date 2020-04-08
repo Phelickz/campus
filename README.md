@@ -1,6 +1,7 @@
 # campus
 
-A new Flutter project.
+A social media platform where Nigerian students can connect and meet each other.
+it uses Provider as state management and Firebase for authentication.
 
 ## Getting Started
 
