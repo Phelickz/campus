@@ -239,7 +239,7 @@ class _LoginPageState extends State<LoginPage>
     return Container(
       padding: EdgeInsets.only(top: 23.0),
       child: Form(
-      key: formKey,
+      // key: formKey,
           child: SingleChildScrollView(
                       child: Column(
               children: <Widget>[
@@ -514,7 +514,7 @@ class _LoginPageState extends State<LoginPage>
     return Container(
       padding: EdgeInsets.only(top: 23.0),
       child: Form(
-        //  key: formKey,
+          key: formKey,
           child: Column(
           children: <Widget>[
             Stack(
@@ -728,8 +728,8 @@ class _LoginPageState extends State<LoginPage>
                             
                             signupEmailController.text, 
                             signupPasswordController.text,
-                            signupUsernameController.text);
-                            gotoHomeScreen(context);
+                            signupUsernameController.text).then((signInUser)=> gotoHomeScreen(context));
+                            // gotoHomeScreen(context);
                             // print('signed up');
                             // Navigator.push(context, 
                             //   MaterialPageRoute(builder: (context) => Feedss()));

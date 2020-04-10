@@ -5,11 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'constants.dart';
+import 'firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
+final Firestore _firestore = Firestore.instance;
 String error;
+String bio = "Hi, I'm new here";
 
+// FireStoreService _fireStoreService;
 
 Map<String, String> exposeUser({@required kUsername, @required kUID}) {
   print(kUID);
@@ -33,6 +39,7 @@ Future getUser() async {
   final FirebaseUser user = await _auth.currentUser();
   return user;
 }
+
 
 Future<bool> isUserSignedIn() async {
   final FirebaseUser currentUser = await _auth.currentUser();
@@ -68,9 +75,26 @@ Future<Map<String, String>> signUp(String email, String password, String name) a
 
       var userUpdateInfo = UserUpdateInfo();
       userUpdateInfo.displayName = name;
-      await user.updateProfile(userUpdateInfo);
+      userUpdateInfo.photoUrl = 'https://pixel.nymag.com/imgs/daily/vulture/2017/06/14/14-tom-cruise.w700.h700.jpg';
+      await user.updateProfile(userUpdateInfo).then((user){
+        _auth.currentUser().then((user) {
+          _firestore.collection('userData').document(user.uid).collection("profile").add({
+            'email': user.email,
+            'username': user.displayName,
+            'photoUrl': user.photoUrl,
+            'bio': bio
+          }).catchError((e){
+            print(e);
+          });
+        }).catchError((e){
+          print(e);
+        });
+      }).catchError((e){
+        print(e);
+      });
       await user.reload();
-
+      // await _fireStoreService.createUser(user);
+      
 
       print('Account created');
       print('$user.uid');
@@ -118,5 +142,9 @@ Future sendPasswordResetEmail(String email) async {
   return _auth.sendPasswordResetEmail(email: email.trim());
 }
 
+Future<String> getUserId() async {
+  final FirebaseUser user = await _auth.currentUser();
+  return user.uid;
+}
 
   

@@ -28,6 +28,9 @@ dependencies:
   google_sign_in:
   cloud_firestore:
   auto_size_text: ^2.1.0
+  image_picker:
+  image_cropper:
+  firebase_core:
 
 
 dev_dependencies:

@@ -56,9 +56,9 @@ class AuthenticationState with ChangeNotifier{
     _email = null;
   }
 
-  void signup(email, password, username){
-    signUp(email, password, username);
-    notifyListeners();
+  Future signup(email, password, username) async{
+    return await signUp(email, password, username);
+    
   }
   
   void login(email, password,) {
@@ -82,6 +82,10 @@ class AuthenticationState with ChangeNotifier{
 
   currentUser(){
     return getUser();
+  }
+
+  currentUserId(){
+    return getUserId();
   }
 
   Map<String, String> exposeCurrentUser(){

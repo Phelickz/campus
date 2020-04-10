@@ -1,3 +1,4 @@
+import 'package:campus/screens/editProfile.dart';
 import 'package:campus/screens/feedss.dart';
 import 'package:campus/screens/launch.dart';
 import 'package:campus/screens/splash.dart';
