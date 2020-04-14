@@ -1,8 +1,6 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:campus/screens/feedss.dart';
 import 'package:campus/screens/forgotPassword.dart';
-import 'package:campus/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

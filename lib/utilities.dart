@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:campus/state/authstate.dart';
 
+import 'screens/editProfile.dart';
 import 'screens/feedss.dart';
 
 
@@ -29,4 +30,9 @@ void gotoLoginScreen(BuildContext context) {
               MaterialPageRoute(builder: (context) => LoginPage()));
       }
   });
+}
+
+
+gotoProfileScreen(BuildContext context) async {
+  await Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfile()));
 }

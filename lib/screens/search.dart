@@ -1,4 +1,3 @@
-import 'package:campus/screens/feedss.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -42,8 +41,8 @@ class _SearchState extends State<Search> {
               IconButton(
                 icon: Icon(FontAwesomeIcons.userEdit), 
                 onPressed: (){
-              Navigator.push(context, 
-              MaterialPageRoute(builder: (context) => Profile()));
+              // Navigator.push(context, 
+              // MaterialPageRoute(builder: (context) => Profile()));
             }),
             ],
           ),

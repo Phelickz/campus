@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'feedss.dart';
 import 'profile.dart';
 import 'search.dart';
 
@@ -37,8 +36,8 @@ class _NotificationsState extends State<Notifications> {
               IconButton(
                 icon: Icon(FontAwesomeIcons.userEdit), 
                 onPressed: (){
-              Navigator.push(context, 
-              MaterialPageRoute(builder: (context) => Profile()));
+              // Navigator.push(context, 
+              // MaterialPageRoute(builder: (context) => Profile()));
             }),
             ],
           ),

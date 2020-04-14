@@ -1,7 +1,6 @@
 import 'package:campus/state/authstate.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'login_page.dart';
 import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,7 +11,6 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  File _imageFile;
   @override
   Widget build(BuildContext context) {
 
@@ -23,7 +21,6 @@ class _EditProfileState extends State<EditProfile> {
     //  var width = double.infinity;
     return Consumer<AuthenticationState>(
       builder: (builder, authState, child){
-        final user = authState.currentUser();
         return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -42,7 +39,7 @@ class _EditProfileState extends State<EditProfile> {
         body: FutureBuilder(
           future: authState.currentUser(),
           builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done){
+          if (snapshot.hasData){
           return SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -182,53 +179,11 @@ class _EditProfileState extends State<EditProfile> {
       );}
     );
   }
-   Future<void> _pickImage(ImageSource source) async {
-    File selected = await ImagePicker.pickImage(source: source);
-
-    setState(() {
-      _imageFile = selected;
-    });
-  }
 
   //Cropper plugin
 
-  Future<void> _cropImage() async {
-    File cropped = await ImageCropper.cropImage(
-      sourcePath: _imageFile.path,
-      cropStyle: CropStyle.circle,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-        CropAspectRatioPreset.ratio3x2,
-        CropAspectRatioPreset.original,
-        CropAspectRatioPreset.ratio4x3,
-        CropAspectRatioPreset.ratio16x9
-      ],
-      androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Cropper',
-          toolbarColor: Colors.deepOrange,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false),
-      iosUiSettings: IOSUiSettings(
-        minimumAspectRatio: 1.0,
-      ),
-      aspectRatio: CropAspectRatio(       
-        ratioX: 1.0, 
-        ratioY: 1.0,),
-      maxHeight: 512,
-      maxWidth: 512,
-    );
-    setState(() {
-      _imageFile = cropped ?? _imageFile;
-    });
-  }
 
-  //remove image
-  void _clear(){
-    setState(() {
-      _imageFile= null;
-    });
-  }
+  
 }
 
 
@@ -240,7 +195,6 @@ class ImageCapture extends StatefulWidget {
 class _ImageCaptureState extends State<ImageCapture> {
   
   File _imageFile;
-  File _userImage;
 
   
   
@@ -305,7 +259,7 @@ class _ImageCaptureState extends State<ImageCapture> {
     final LostDataResponse response =
         await ImagePicker.retrieveLostData();
     if (response == null) {
-      return;
+      return null;
     }
     if (response.file != null) {
       setState(() {
@@ -322,31 +276,49 @@ class _ImageCaptureState extends State<ImageCapture> {
 
   @override
   Widget build(BuildContext context) {
-    
+    // final id = Provider.of<AuthenticationState>(context, listen: false).currentUserId();
     retrieveLostData();
     return Consumer<AuthenticationState>(
       builder: (builder, authState, child){
-        final user = authState.currentUser();
-          return Scaffold(
-        appBar: AppBar(),
+        
+        return Scaffold(
+        appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.file_upload),
+              onPressed: () async{
+                final id = await Provider.of<AuthenticationState>(context, listen: false).currentUserId();
+                authState.updateProfilePicture(id, _imageFile).then((user){
+                Navigator.pop(context);
+                });
+              },)
+          ],
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios), 
+            onPressed: (){
+              
+                Navigator.pop(context);
+              
+            }),
+        ),
         bottomNavigationBar: BottomAppBar(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               IconButton(
                 icon: Icon(Icons.photo_camera), 
-                onPressed: (){_pickImage(ImageSource.camera);}
+                onPressed: () => _pickImage(ImageSource.camera)
                 ),
               IconButton(
                 icon: Icon(Icons.photo_library), 
-                onPressed: (){_pickImage(ImageSource.gallery);})
+                onPressed: () => _pickImage(ImageSource.gallery))
             ],
           ),
         ),
         body: FutureBuilder(
           future: authState.currentUser(),
           builder: (context, snapshot){
-            if(snapshot.connectionState == ConnectionState.done){
+            if(snapshot.hasData){
               if (_imageFile != null) {
                 return ListView(
                 children: <Widget>[
@@ -358,11 +330,11 @@ class _ImageCaptureState extends State<ImageCapture> {
                       
                       children: <Widget>[
                         FlatButton(
-                          onPressed: _cropImage, 
+                          onPressed: () => _cropImage(), 
                           child: Icon(Icons.crop)
                           ),
                         FlatButton(
-                          onPressed: _clear, 
+                          onPressed: () => _clear(), 
                           child: Icon(Icons.refresh)
                           ),
                       ],

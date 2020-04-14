@@ -1,11 +1,7 @@
-import 'package:auto_size_text/auto_size_text.dart';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'constants.dart';
-import 'firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
@@ -46,7 +42,7 @@ Future<bool> isUserSignedIn() async {
   return currentUser != null;
 }
 
-void signOut() {
+ signOut() {
   try{
     _auth.signOut();
   } catch (error) {
@@ -64,7 +60,7 @@ void onAuthenticationChange(Function isLogin) {
   });
 }
 
-Future<Map<String, String>> signUp(String email, String password, String name) async {
+Future<Map<String, String>> signUp(String email, String password, String name,) async {
    try{ AuthResult result = await _auth.createUserWithEmailAndPassword(
       email: email.trim(), 
       password: password);
@@ -75,25 +71,32 @@ Future<Map<String, String>> signUp(String email, String password, String name) a
 
       var userUpdateInfo = UserUpdateInfo();
       userUpdateInfo.displayName = name;
-      userUpdateInfo.photoUrl = 'https://pixel.nymag.com/imgs/daily/vulture/2017/06/14/14-tom-cruise.w700.h700.jpg';
+      userUpdateInfo.photoUrl = 'https://www.kindpng.com/picc/b/78-785827_avatar-png-icon.png';
       await user.updateProfile(userUpdateInfo).then((user){
         _auth.currentUser().then((user) {
-          _firestore.collection('userData').document(user.uid).collection("profile").add({
-            'email': user.email,
-            'username': user.displayName,
-            'photoUrl': user.photoUrl,
-            'bio': bio
+         final DocumentReference _documentReference = 
+          _firestore.collection('userData').document(user.uid).collection("profile").document();
+          _documentReference.setData
+            ({
+              'email': user.email,
+              'username': user.displayName,
+              'photoUrl': user.photoUrl,
+              'bio': bio,
+              'uid' : user.uid,
+              'followers': 0,
+              'following': 0,
+              'documentId' : _documentReference.documentID,
+            }).catchError((e){
+              print(e);
+            });
           }).catchError((e){
             print(e);
           });
         }).catchError((e){
           print(e);
         });
-      }).catchError((e){
-        print(e);
-      });
-      await user.reload();
-      // await _fireStoreService.createUser(user);
+        await user.reload();
+        // await _fireStoreService.createUser(user);
       
 
       print('Account created');
@@ -144,7 +147,10 @@ Future sendPasswordResetEmail(String email) async {
 
 Future<String> getUserId() async {
   final FirebaseUser user = await _auth.currentUser();
-  return user.uid;
+  if (user!=null){
+    return user.uid;
+  } return null;
+  
 }
 
   
