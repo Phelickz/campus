@@ -30,17 +30,17 @@ class Post {
   });
 
   factory Post.fromMap(dynamic doc) => Post(
-    documentID: doc.documentID,
+    documentID: doc['documentID'],
     createdAt: doc['createdAt'],
     profilePic: doc['profilePic'],
     username: doc['username'],
     comments: doc['comments'],
     likes: doc['likes'],
-    date: doc["date"],
+    date: doc["date"].toDate(),
     photoUrl: doc["photoUrl"],
     text: doc["text"],
     userId: doc["userId"],
-    time: doc['time']
+    time: doc['time'].toDate()
   );
 }
 

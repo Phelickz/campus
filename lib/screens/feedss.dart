@@ -264,6 +264,7 @@ class _FeedssState extends State<Feedss> {
                     final postTime = userNotifier.usersPosts[index].date;
                     final difference = time.difference(postTime);
                     var newtime = timeago.format(time.subtract(difference), locale: 'en');
+                    if (userNotifier.usersPosts.isNotEmpty) {
                     return Container(
                       height: 600,
                       width: double.infinity,
@@ -385,7 +386,8 @@ class _FeedssState extends State<Feedss> {
                         ),
                       ),
                       
-                    ); 
+                    );
+                  } return CircularProgressIndicator();
                   }         
                 ),
               )

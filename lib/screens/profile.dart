@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:campus/screens/feedss.dart';
 import 'package:campus/screens/uploadPost.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,13 +43,13 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
     UserNotifier userNotifier = Provider.of<UserNotifier>(context);
+    final auth = Provider.of<AuthenticationState>(context);
     return Scaffold(      
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           // userNotifier.currentUser = userNotifier.userProfileData[index];
-          Navigator.push(context,
-           CupertinoPageRoute(builder: (context) => UploadPost(profilePic, username)));
+         
         }),
         bottomNavigationBar: BottomAppBar(         
           color: _background,
@@ -64,7 +65,10 @@ class _ProfileState extends State<Profile> {
                   elevation: 10,
                   shape: CircleBorder(),
                   child: InkWell(
-                    onTap: (){},
+                    onTap: (){
+                      Navigator.push(context, 
+                        MaterialPageRoute(builder: (context) => Feedss()));
+                    },
                     child: CircleAvatar(
                       backgroundColor: _background,
                       radius: 20,
@@ -150,10 +154,10 @@ class _ProfileState extends State<Profile> {
                                 physics: BouncingScrollPhysics(),
                                 itemBuilder: (BuildContext context, int index){
                                   var item = userNotifier.userProfileData[index];
-                                  setState(() {
-                                    profilePic = item.photoUrl;
-                                    username = item.username;
-                                  });
+                                  // setState(() {
+                                  //   profilePic = item.photoUrl;
+                                  //   username = item.username;
+                                  // });
                                 return
                                   Container(
                                     color: Colors.transparent,
@@ -195,7 +199,15 @@ class _ProfileState extends State<Profile> {
                                   Padding(
                                     padding: const EdgeInsets.only(left: 170, top: 10),
                                     child: InkWell(
-                                      
+                                      onTap: (){
+                                        setState(() {
+                                          profilePic = item.photoUrl;
+                                          username = item.username;
+                                          Navigator.push(context,
+                                            CupertinoPageRoute(builder: (context) => UploadPost(profilePic, username)));
+                                        });
+
+                                      },
                                       child: CircleAvatar(
                                         
                                         backgroundImage: NetworkImage(item.photoUrl),
