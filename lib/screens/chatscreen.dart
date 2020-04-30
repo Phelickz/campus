@@ -1,454 +1,336 @@
+import 'package:campus/data/data.dart';
+import 'package:campus/models/chat_model.dart';
+import 'package:campus/models/story_model.dart';
+import 'package:campus/services/model.dart';
+import 'package:campus/services/theme_notifier.dart';
+import 'package:campus/state/authstate.dart';
+import 'package:campus/utils/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class Chats extends StatefulWidget {
+import 'chat.dart';
+
+class Home extends StatefulWidget {
+  final _uid;
+  Home(this._uid);
   @override
-  _ChatsState createState() => _ChatsState();
+  _HomeState createState() => _HomeState(this._uid);
 }
 
-class _ChatsState extends State<Chats> {
+class _HomeState extends State<Home> {
+  var _darkTheme;
+  final _uid;
+  _HomeState(this._uid);
+  List<StoryModel> stories = new List();
+  List<ChatModel> chats = new List();
+
+  @override
+  void initState() {
+    super.initState();
+    stories = getStories();
+    // chats = getChats();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.grey[50],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black,), 
-          onPressed: (){
-            Navigator.pop(context);
-          }),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.unfold_more), 
-            onPressed: null)
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.pink[400],
-        child: Icon(Icons.chat_bubble),
-        onPressed: null),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 30),
-              child: Text('Conversation',
-                style: TextStyle(
-                  fontSize: 27,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'WorkSansBold'),
-                  ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            ClipRect(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey,
-                      offset: Offset(2.0, 2.0),
-                      blurRadius: 5.0
-                    )
-                  ]
-                ),
-                height: 50,
-                margin: EdgeInsets.only(left: 30, right: 30),
-                child: TextField(
-                  style: TextStyle(
-                    fontSize: 25,
-                    color: Colors.pink[400],
-                  ),
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-                    prefixIcon: Icon(FontAwesomeIcons.search, color: Colors.pink[400],),
-                    hintText: 'Search Conversation',
-                    hintStyle: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Consumer<AuthenticationState>(
+      builder: (context, _authState, child) {
+        return Scaffold(
+          backgroundColor: Color(0xff171719),
+          body: SingleChildScrollView(
+            child: Container(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 70,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
-                    // border: OutlineInputBorder(
-                      
-                    //   borderRadius: BorderRadius.circular(25),
-                    //   borderSide: BorderSide()
-                    // )
                   ),
-                ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          "Messages",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        Spacer(),
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Color(0xff444446),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+
+                  /// now stories
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    height: 120,
+                    child: ListView.builder(
+                        itemCount: stories.length,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return StoryTile(
+                            imgUrl: stories[index].imgUrl,
+                            username: stories[index].username,
+                          );
+                        }),
+                  ),
+
+                  /// CHats
+                  ///
+                  Container(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      decoration: BoxDecoration(
+                          color: _darkTheme? Colors.black87: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30))),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              margin: EdgeInsets.only(top: 30),
+                              child: Row(
+                                children: <Widget>[
+                                  Text(
+                                    "Recent",
+                                    style: TextStyle(
+                                        color: _darkTheme? Colors.white :Colors.black45,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.more_vert,
+                                    color: Colors.black45,
+                                  )
+                                ],
+                              ),
+                            ),
+                            StreamBuilder<List<ConversationSnippet>>(
+                              stream: _authState.userConversations(_uid),
+                              builder: (context, _snapshot) {
+                                var _data = _snapshot.data;
+                                return _snapshot.hasData
+                                    ? ListView.builder(
+                                        itemCount: _data.length,
+                                        shrinkWrap: true,
+                                        physics: ClampingScrollPhysics(),
+                                        itemBuilder: (context, index) {
+                                          return ChatTile(
+                                            
+                                            imgUrl: _data[index].image,
+                                            name: _data[index].name,
+                                            lastMessage: _data[index].type == MessageType.Text ?
+                                                _data[index].lastMessage : 'Attachment: photo',
+                                            haveunreadmessages: false,
+                                            unreadmessages: 1,
+                                            lastSeenTime: timeago.format(
+                                                _data[index]
+                                                    .timestamp
+                                                    .toDate()),
+                                            conversationID:
+                                                _data[index].conversationID,
+                                            id: _data[index].id, uid: _uid,
+                                          );
+                                        })
+                                    : CircularProgressIndicator();
+                              },
+                            ),
+                          ],
+                        ),
+                      ))
+                ],
               ),
             ),
-            Divider(),
-            Container(
-              color: Colors.transparent,
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: ListView(
-                physics: BouncingScrollPhysics(),
+          ),
+        );
+      },
+    );
+  }
+
+  // getUserId() async {
+  //   final uid = await Provider.of<AuthenticationState>(context, listen: false)
+  //       .currentUserId();
+  //   setState(() {
+  //     _uid = uid;
+  //   });
+  //   return uid;
+  // }
+}
+
+class StoryTile extends StatelessWidget {
+  final String imgUrl;
+  final String username;
+  StoryTile({@required this.imgUrl, @required this.username});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(right: 16),
+      child: Column(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(60),
+            child: Image.network(
+              imgUrl,
+              height: 60,
+              width: 60,
+              fit: BoxFit.cover,
+            ),
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          Text(
+            username,
+            style: TextStyle(
+                color: Color(0xff78778a),
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ChatTile extends StatelessWidget {
+  var _darkTheme;
+  final String uid;
+  final String id;
+  final String conversationID;
+  final String imgUrl;
+  final String name;
+  final String lastMessage;
+  final bool haveunreadmessages;
+  final int unreadmessages;
+  final String lastSeenTime;
+  ChatTile(
+      {@required this.unreadmessages,
+      @required this.uid,
+      @required this.id,
+      @required this.conversationID,
+      @required this.haveunreadmessages,
+      @required this.lastSeenTime,
+      @required this.lastMessage,
+      @required this.imgUrl,
+      @required this.name});
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                      uid,
+                      conversationID,
+                      id,
+                      imgUrl,
+                      name,
+                      
+                    )));
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 16),
+        child: Row(
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(60),
+              child: Image.network(
+                imgUrl,
+                height: 60,
+                width: 60,
+                fit: BoxFit.cover,
+                color: _darkTheme ? Colors.white : Colors.black,
+              ),
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Nicole Gray', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('hello there?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('5.25pm'),
-                          )
-                        ],
-                      ),
-                    ),
+                  Text(
+                    name,
+                    style: TextStyle(
+                        color: _darkTheme ? Colors.white:Colors.black87,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600),
                   ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Allison Becker', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('where are you from?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('1.22pm'),
-                          )
-                        ],
-                      ),
-                    ),
+                  SizedBox(
+                    height: 8,
                   ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Jamie Elba', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('where do you school?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('2.15am'),
-                          )
-                        ],
-                      ),
-                    ),
+                  Text(
+                    lastMessage.length >= 30 ? lastMessage.substring(0, 25) + '...' : lastMessage,
+                    style: TextStyle(
+                        color: _darkTheme? Colors.white: Colors.black54,
+                        fontSize: 15,
+                        fontFamily: "Neue Haas Grotesk"),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 14,
+            ),
+            Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(lastSeenTime),
+                  SizedBox(
+                    height: 16,
                   ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Berry Alley', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('hi there?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('9.45pm'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Nicole Gray', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('hello there?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('5.25pm'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Nicole Gray', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('hello there?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('5.25pm'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Nicole Gray', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('hello there?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('5.25pm'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Nicole Gray', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('hello there?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('5.25pm'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Nicole Gray', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('hello there?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('5.25pm'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Divider(),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('Nicole Gray', 
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20
-                                  ),),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10, top: 5),
-                                child: Text('hello there?'),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text('5.25pm'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                  haveunreadmessages
+                      ? Container(
+                          width: 30,
+                          height: 30,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              color: Color(0xffff410f),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Text(
+                            "$unreadmessages",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600),
+                          ))
+                      : Container()
                 ],
               ),
             )

@@ -35,6 +35,16 @@ dependencies:
   photofilters:
   image:
   timeago: ^2.0.26
+  animated_text_kit:
+  chewie:
+  video_player:
+  page_transition:
+  flutter_spinkit:
+  shared_preferences:
+  day_night_switch:
+  flutter_staggered_grid_view:
+
+
   
 
 dev_dependencies:
@@ -65,6 +75,12 @@ flutter:
      - assets/images/IMG_20190412_163310_101.jpg
      - assets/images/girl-hand-on-head-forgot-260nw-1465714259.jpg
      - assets/images/shutterstock_remember_password.jpg
+     - assets/images/BackGroundImage.png
+     - assets/images/SignUpImage.png
+     - assets/images/image.png
+     - assets/images/more.png
+     - assets/images/smile.png
+     - assets/images/couple-5028351_1920.jpg
 
   fonts:
     - family: WorkSansSemiBold

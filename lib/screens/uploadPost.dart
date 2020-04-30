@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
 import 'package:photofilters/photofilters.dart';
 import 'package:image/image.dart' as imageLib;
-import 'package:campus/services/firestore.dart';
 import 'package:campus/services/model.dart';
 import 'package:campus/state/authstate.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +40,7 @@ class _UploadPostState extends State<UploadPost> {
   // Select an image via gallery or camera
 
   Future<void> _pickImage(ImageSource source) async {
+    
     File selected = await ImagePicker.pickImage(source: source);
 
     setState(() {
@@ -141,7 +141,7 @@ class _UploadPostState extends State<UploadPost> {
   @override
   Widget build(BuildContext context) {
     retrieveLostData();
-
+    // SnackBarService.instance.buildContext = context;
     return Consumer<AuthenticationState>(
       builder: (builder, authState, child){
           return Scaffold(
@@ -181,7 +181,8 @@ class _UploadPostState extends State<UploadPost> {
                     createdAt: Timestamp.now(),
                     date: DateTime.now(),
                     time: DateTime.now(),
-                  ), _uid, _imageFile, _profilePic, _username);
+                    liked: false
+                  ), _uid, _imageFile, _profilePic, _username, null);
                    Navigator.pop(context);
               })
           ],

@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage>
   TextEditingController signupUsernameController = new TextEditingController();
   TextEditingController signupPasswordController = new TextEditingController();
   TextEditingController signupConfirmPasswordController = new TextEditingController();
-  TextEditingController signupLastNameController = new TextEditingController();
+  TextEditingController signupPhoneController = new TextEditingController();
   TextEditingController signupBusinessNameController = new TextEditingController();
   TextEditingController signupBusinessDescriptionController = new TextEditingController();
   TextEditingController signupLocationController = new TextEditingController();
@@ -734,7 +734,8 @@ class _LoginPageState extends State<LoginPage>
                               
                               signupEmailController.text, 
                               signupPasswordController.text,
-                              signupUsernameController.text).then((signInUser)=> gotoHomeScreen(context));
+                              signupUsernameController.text,
+                              signupPhoneController.text).then((signInUser)=> gotoHomeScreen(context));
                               // gotoHomeScreen(context);
                               // print('signed up');
                               // Navigator.push(context, 

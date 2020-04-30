@@ -1,4 +1,4 @@
-import 'package:campus/screens/login_page.dart';
+import 'package:campus/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:campus/state/authstate.dart';
@@ -27,7 +27,7 @@ void gotoLoginScreen(BuildContext context) {
     if (Provider.of<AuthenticationState>(context, listen: false).authStatus ==
       null){
         Navigator.push(context, 
-              MaterialPageRoute(builder: (context) => LoginPage()));
+              MaterialPageRoute(builder: (context) => LoginScreen()));
       }
   });
 }

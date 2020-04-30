@@ -1,4 +1,4 @@
-import 'package:campus/screens/login_page.dart';
+import 'package:campus/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -182,7 +182,7 @@ class Launch3 extends StatelessWidget {
             IconButton(icon: Icon(Icons.navigate_next), 
               onPressed: () {
               Navigator.push(context, 
-              MaterialPageRoute(builder: (context) => LoginPage()));
+              MaterialPageRoute(builder: (context) => LoginScreen()));
             })
           ],
         ),

@@ -1,5 +1,4 @@
 
-import 'dart:collection';
 
 import 'package:campus/services/model.dart';
 
@@ -23,6 +22,22 @@ class UserNotifier with ChangeNotifier{
 
   Post get currentPost => _currentPost;
 
+
+  List<Post> _usersPostsWithId =[];
+  Post _currentPostWithId;
+  List<Post> get usersPostsWithId => _usersPostsWithId;
+  Post get currentPostWithId => _currentPostWithId;
+
+
+  List<Feeds> _userFeeds = [];
+
+  Feeds _currentFeed;
+
+  List<Feeds> get userFeeds => _userFeeds;
+
+  Feeds get currentFeed => _currentFeed;
+
+
   set userProfileData(List<Users> userProfileData) {
     _userProfileData = userProfileData;
     notifyListeners();
@@ -40,6 +55,26 @@ class UserNotifier with ChangeNotifier{
 
   set currentPost(Post post){
     _currentPost = post;
+    notifyListeners();
+  }
+
+  set usersPostsWithId(List<Post> usersPostsWithId){
+    _usersPostsWithId = usersPostsWithId;
+    notifyListeners();
+  }
+
+  set currentPostWithid(Post postWithId){
+    _currentPostWithId = postWithId;
+    notifyListeners();
+  }
+  
+  set userFeeds(List<Feeds> userFeeds){
+    _userFeeds = userFeeds;
+    notifyListeners();
+  }
+
+  set currentFeed(Feeds feed){
+    _currentFeed = feed;
     notifyListeners();
   }
 }
