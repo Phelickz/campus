@@ -4,6 +4,7 @@ import 'package:campus/screens/uploadPost.dart';
 import 'package:campus/services/model.dart';
 import 'package:campus/services/theme_notifier.dart';
 import 'package:campus/utils/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -29,8 +30,8 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   var _darkTheme;
-  String profilePic;
-  String username;
+  String _profilePic;
+  String _username;
   Color _colors = Colors.black;
   Color _background = Colors.grey[200];
   final uid;
@@ -134,7 +135,7 @@ class _ProfileState extends State<Profile> {
                       boxShadow: [
                         new BoxShadow(
                           color: _darkTheme ? Colors.white38 : Colors.black38,
-                          
+
                           // color: _darkTheme ? Colors.white : Colors.black,
                           blurRadius: 10.0,
                         ),
@@ -237,21 +238,236 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                   Positioned(
-                    left: 25,
-                    top: 25,
-                    child: Card(
-                      elevation: 10,
-                      shape: CircleBorder(),
-                      child: InkWell(
-                        onTap: () {},
-                        child: CircleAvatar(
-                          backgroundColor: Colors.blue,
-                          radius: 15,
-                          child: Icon(Icons.add, color: Colors.black),
-                        ),
-                      ),
+                    top: 18.0,
+                    bottom: 10.0,
+                    left: 10.0,
+                    right: 10.0,
+                    child: StreamBuilder(
+                      stream: getUsersDataSnapshots(context),
+                      builder: (context, snapshot) {
+                        return snapshot.hasData ? ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data.documents.length,
+                            // physics: BouncingScrollPhysics(),
+                            itemBuilder: (BuildContext context, int index) {
+                              var item = snapshot.data.documents[index];
+
+                              // setState(() {
+                              //   profilePic = item.photoUrl;
+                              //   username = item.username;
+                              // });
+                              return Container(
+                                color: Colors.transparent,
+                                margin: EdgeInsets.only(left: 10, right: 10),
+                                height: 280,
+                                width: MediaQuery.of(context).size.width,
+                                // decoration: BoxDecoration(
+                                //   boxShadow: [
+                                //       BoxShadow(
+                                //         spreadRadius: 0.0,
+                                //         color: Colors.grey,
+                                //         offset: Offset(1.0, 0.75),
+                                //         blurRadius: 1.0
+                                //       )
+                                //     ],
+                                //   color: Colors.white,
+                                //   borderRadius: BorderRadius.only(
+                                //     bottomLeft: Radius.circular(15),
+                                //     bottomRight: Radius.circular(15)
+                                //   )
+                                // ),
+                                child: Container(
+                                  color: Colors.transparent,
+
+                                  // elevation: 5,
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        // Padding(
+                                        //   padding: const EdgeInsets.only(left:8.0),
+                                        //   child: Text('My Profile',
+                                        //     style: TextStyle(
+                                        //       fontSize: 25,
+                                        //       fontWeight: FontWeight.bold,
+                                        //       fontFamily: 'WorkSansSemiBold'
+                                        //     ),),
+                                        // ),
+                                        // SizedBox(height: 20,),
+                                        Align(
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 15.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                InkWell(
+                                                  onTap: () {},
+                                                  child: CircleAvatar(
+                                                    backgroundImage:
+                                                        NetworkImage(item['photoUrl']),
+                                                    radius: 30,
+                                                    backgroundColor: Colors.white,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(
+                                                      top: 30.0),
+                                                  child: CircleAvatar(
+                                                    radius: 12,
+                                                    child: IconButton(
+                                                        icon: Icon(Icons.edit,
+                                                            size: 15),
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              CupertinoPageRoute(
+                                                                  builder: (context) => ProfileEdit(
+                                                                      EditMode
+                                                                          .Editing,
+                                                                      item['username'],
+                                                                      item['bio'],
+                                                                      item['email'],
+                                                                      item['phone'],
+                                                                      item['photoUrl'])));
+                                                        }),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+
+                                        Align(
+                                          child: Text(
+                                            item['username'],
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'WorkSansBold'),
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Align(
+                                          child: Text(
+                                            item['email'],
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Align(
+                                          child: Text(
+                                            item['bio'],
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: 'WorkSansBold'),
+                                          ),
+                                        ),
+                                        SizedBox(height: 40),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: <Widget>[
+                                            Column(
+                                              children: <Widget>[
+                                                Text(
+                                                  item['posts'].toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20,
+                                                      fontWeight: FontWeight.bold),
+                                                ),
+                                                Text('Photos',
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white60,
+                                                        fontWeight:
+                                                            FontWeight.bold))
+                                              ],
+                                            ),
+                                            Column(
+                                              children: <Widget>[
+                                                Text(item['followers'].toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text('Followers',
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white60,
+                                                        fontWeight:
+                                                            FontWeight.bold))
+                                              ],
+                                            ),
+                                            Column(
+                                              children: <Widget>[
+                                                Text(item['following'].toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text('Following',
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white60,
+                                                        fontWeight:
+                                                            FontWeight.bold))
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }) : CircularProgressIndicator();
+                      }
                     ),
                   ),
+                  Positioned(
+                      left: 20,
+                      top: 25,
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          // color: Color(0xffe7e7ef),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.blue,
+                          child: Icon(Icons.add),
+                          onPressed: () async {
+                            await FirebaseAuth.instance
+                                .currentUser()
+                                .then((user) {
+                              setState(() {
+                                _username = user.displayName;
+                                _profilePic = user.photoUrl;
+                              });
+                            });
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        UploadPost(_profilePic, _username)));
+                          },
+                        ),
+                      )),
                   Positioned(
                     left: 5,
                     top: 5,
@@ -262,214 +478,6 @@ class _ProfileState extends State<Profile> {
                           fontSize: 18,
                           fontFamily: 'WorkSansBold'),
                     ),
-                  ),
-                  Positioned(
-                    top: 18.0,
-                    bottom: 10.0,
-                    left: 10.0,
-                    right: 10.0,
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: userNotifier.userProfileData.length,
-                        // physics: BouncingScrollPhysics(),
-                        itemBuilder: (BuildContext context, int index) {
-                          var item = userNotifier.userProfileData[index];
-                          
-                          // setState(() {
-                          //   profilePic = item.photoUrl;
-                          //   username = item.username;
-                          // });
-                          return Container(
-                            color: Colors.transparent,
-                            margin: EdgeInsets.only(left: 10, right: 10),
-                            height: 280,
-                            width: MediaQuery.of(context).size.width,
-                            // decoration: BoxDecoration(
-                            //   boxShadow: [
-                            //       BoxShadow(
-                            //         spreadRadius: 0.0,
-                            //         color: Colors.grey,
-                            //         offset: Offset(1.0, 0.75),
-                            //         blurRadius: 1.0
-                            //       )
-                            //     ],
-                            //   color: Colors.white,
-                            //   borderRadius: BorderRadius.only(
-                            //     bottomLeft: Radius.circular(15),
-                            //     bottomRight: Radius.circular(15)
-                            //   )
-                            // ),
-                            child: Container(
-                              color: Colors.transparent,
-
-                              // elevation: 5,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    // Padding(
-                                    //   padding: const EdgeInsets.only(left:8.0),
-                                    //   child: Text('My Profile',
-                                    //     style: TextStyle(
-                                    //       fontSize: 25,
-                                    //       fontWeight: FontWeight.bold,
-                                    //       fontFamily: 'WorkSansSemiBold'
-                                    //     ),),
-                                    // ),
-                                    // SizedBox(height: 20,),
-                                    Align(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 15.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  profilePic = item.photoUrl;
-                                                  username = item.username;
-                                                  Navigator.push(
-                                                      context,
-                                                      CupertinoPageRoute(
-                                                          builder: (context) =>
-                                                              UploadPost(
-                                                                  profilePic,
-                                                                  username)));
-                                                });
-                                              },
-                                              child: CircleAvatar(
-                                                backgroundImage:
-                                                    NetworkImage(item.photoUrl),
-                                                radius: 30,
-                                                backgroundColor:
-                                                    Colors.white,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 30.0),
-                                              child: CircleAvatar(
-                                                radius: 12,
-                                                child: IconButton(
-                                                    icon: Icon(Icons.edit,
-                                                        size: 15),
-                                                    onPressed: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          CupertinoPageRoute(
-                                                              builder: (context) =>
-                                                                  ProfileEdit(
-                                                                      EditMode
-                                                                          .Editing,
-                                                                      item.username,
-                                                                      item.bio,
-                                                                      item.email,
-                                                                      item.phone)));
-                                                    }),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-
-                                    Align(
-                                      child: Text(
-                                        item.username,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'WorkSansBold'),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Align(
-                                      child: Text(
-                                        item.email,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Align(
-                                      child: Text(
-                                        item.bio,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w400,
-                                            fontFamily: 'WorkSansBold'),
-                                      ),
-                                    ),
-                                    SizedBox(height: 40),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        Column(
-                                          children: <Widget>[
-                                            Text(
-                                              '456',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Text('Photos',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.white60,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                          ],
-                                        ),
-                                        Column(
-                                          children: <Widget>[
-                                            Text(item.followers,
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Text('Followers',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.white60,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                          ],
-                                        ),
-                                        Column(
-                                          children: <Widget>[
-                                            Text(item.following,
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                            Text('Following',
-                                                style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: Colors.white60,
-                                                    fontWeight:
-                                                        FontWeight.bold))
-                                          ],
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
                   ),
                   Positioned(
                     child: Padding(
@@ -505,64 +513,39 @@ class _ProfileState extends State<Profile> {
                       builder: (context, snapshot) {
                         var _data = snapshot.data;
                         return snapshot.hasData
-                            ? GridView.builder(
-                                shrinkWrap: true,
-                                itemCount: _data.length,
-                                padding: EdgeInsets.only(top: 0),
-                                physics: ClampingScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: (orientation ==
-                                                Orientation.landscape)
-                                            ? 2
-                                            : 3),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Image.network(
-                                    _data[index].photoUrl,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                              )
+                            ? _data.isNotEmpty
+                                ? GridView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: _data.length,
+                                    padding: EdgeInsets.only(top: 0),
+                                    physics: ClampingScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: (orientation ==
+                                                    Orientation.landscape)
+                                                ? 2
+                                                : 3),
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Image.network(
+                                        _data[index].photoUrl,
+                                        fit: BoxFit.cover,
+                                      );
+                                    },
+                                  )
+                                : Align(
+                                    alignment: Alignment.center,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 130),
+                                      child: Text(
+                                        'Your Posts will appear here',
+                                        style: TextStyle(color: Colors.black45),
+                                      ),
+                                    ))
                             : CircularProgressIndicator();
                       }),
                 ],
               )),
-          // Container(
-          //   height: 300,
-          //   width: MediaQuery.of(context).size.width,
-          //   child: Card(
-          //     elevation: 10,
-          //     color: Colors.white,
-          //     child: Image.asset('assets/images/photo-1461280360983-bd93eaa5051b.jpeg', fit: BoxFit.cover,),
-          //   ),
-          // ),
-          // Container(
-          //   height: 300,
-          //   width: MediaQuery.of(context).size.width,
-          //   child: Card(
-          //     elevation: 10,
-          //     color: Colors.white,
-          //     child: Image.asset('assets/images/meet_online_couple_sodas_1600.jpg', fit: BoxFit.cover,),
-          //   ),
-          // ),
-          // Container(
-          //   height: 300,
-          //   width: MediaQuery.of(context).size.width,
-          //   child: Card(
-          //     elevation: 10,
-          //     color: Colors.white,
-          //     child: Image.asset('assets/images/login_logo.png', fit: BoxFit.cover,),
-          //   ),
-          // ),
-          // Container(
-          //   height: 300,
-          //   width: MediaQuery.of(context).size.width,
-          //   child: Card(
-          //     elevation: 10,
-          //     color: Colors.white,
-          //     child: Image.asset('assets/images/wpid-11.png', fit: BoxFit.cover,),
-          //   ),
-          // ),
         ])),
       ),
     );
@@ -623,8 +606,7 @@ class _ProfileState extends State<Profile> {
         .currentUserId();
     yield* _firestore
         .collection('userData')
-        .document(uid)
-        .collection('profile')
+        .where('uid', isEqualTo: uid)
         .snapshots();
   }
 }

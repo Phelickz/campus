@@ -275,7 +275,8 @@ class _ProfileTestState extends State<ProfileTest> {
                                                                 item.username,
                                                                 item.bio,
                                                                 item.email,
-                                                                item.phone)));
+                                                                item.phone,
+                                                                item.photoUrl)));
                                               }),
                                         ),
                                       )

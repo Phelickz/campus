@@ -502,7 +502,7 @@ Stream<List<Comments>> getCommentsList(String _postId) {
       .map((QuerySnapshot snapshot) {
     List<Comments> _commentDocs =
         snapshot.documents.map((doc) => Comments.fromFirestore(doc)).toList();
-    _commentDocs.sort((comp1, comp2) => comp2.date.compareTo(comp1.date));
+    _commentDocs.sort((comp1, comp2) => comp2.timestamp.toDate().compareTo(comp1.timestamp.toDate()));
     return _commentDocs;
   });
 }
@@ -532,9 +532,16 @@ Future<void> sendMessage(String _conversationID, Message _message) {
   });
 }
 
-Future<void> addComment(String _postId, String _userId, String _photoUrl, Comments _comments) {
+Future<void> addComment(String _postId, String _userId, String _photoUrl, Comments _comments) async {
   var _ref =
       _firestore.collection(_collectionPost).document(_postId).collection(_userComments).document();
+
+  await _firestore
+      .collection(_collectionPost)
+      .document(_postId)
+      .updateData({'comments': FieldValue.increment(1)}).catchError((e) {
+    print(e);
+  });
 
   return _ref.setData({
     'userId': _userId,

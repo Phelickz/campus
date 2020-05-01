@@ -36,7 +36,8 @@ class _FeedssState extends State<Feedss> {
   var _darkTheme;
   int counter;
   // List<bool> _liked;
-  bool _liked = false;
+  bool _liked;
+  String likedKey;
 
   Color _colors = Colors.black;
   Color _background = Colors.grey[200];
@@ -51,7 +52,21 @@ class _FeedssState extends State<Feedss> {
         Provider.of<UserNotifier>(context, listen: false);
     getUsersPosts(userNotifier);
     getUsersFeeds(userNotifier);
+    _restorePersistedPreference();
     super.initState();
+  }
+
+  void _restorePersistedPreference() async {
+    var preferences = await SharedPreferences.getInstance();
+    var unique = preferences.getString('uniqueID');
+    var liked = preferences.getBool(unique) ?? false;
+    setState(() => this._liked = liked);
+  }
+
+  void _persistPreference() async {
+    setState(() => _liked = !_liked);
+    var preferences = await SharedPreferences.getInstance();
+    preferences.setBool(likedKey, _liked);
   }
 
   @override
@@ -512,32 +527,43 @@ class _FeedssState extends State<Feedss> {
                                                                           final _auth = Provider.of<AuthenticationState>(
                                                                               context,
                                                                               listen: false);
-                                                                          final _uid = await Provider.of<AuthenticationState>(context, listen: false).currentUserId();
-                                                                          
-                                                                          final FirebaseUser _user = await Provider.of<AuthenticationState>(context, listen: false).getCurrentUser();
-                                                                          // _liked  = await getLiked();
+                                                                          final _uid =
+                                                                              await Provider.of<AuthenticationState>(context, listen: false).currentUserId();
 
-                                                                          setState(
-                                                                              () {
-                                                                            _liked =
-                                                                                !_liked;
+                                                                          await FirebaseAuth
+                                                                              .instance
+                                                                              .currentUser()
+                                                                              .then((user) {
+                                                                            setState(() {
+                                                                              _liked = !_liked;
 
-                                                                            counter =
-                                                                                _item.likes;
+                                                                              likedKey = _item.documentID;
 
-                                                                            // counter++;
-                                                                            if (_liked) {
-                                                                              counter = counter + 2;
-                                                                              // setLiked(true);
-                                                                              _auth.updateLikess(_item.documentID);
-                                                                              _auth.postLikes(_uid, _item.documentID, _user.photoUrl);
-                                                                            } else {
-                                                                              counter = counter + 1;
-                                                                              // setLiked(false);
-                                                                              _auth.removeLikesId(_uid, _item.documentID);
-                                                                              _auth.reduceLikes(_item.documentID);
-                                                                            }
+                                                                              counter = _item.likes;
+
+                                                                              // counter++;
+                                                                              if (_liked) {
+                                                                                counter = counter + 2;
+                                                                                // setLiked(true);
+                                                                                _auth.updateLikess(_item.documentID);
+                                                                                _auth.postLikes(_uid, _item.documentID, user.photoUrl);
+                                                                              } else {
+                                                                                counter = counter + 1;
+                                                                                // setLiked(false);
+                                                                                _auth.removeLikesId(_uid, _item.documentID);
+                                                                                _auth.reduceLikes(_item.documentID);
+                                                                              }
+                                                                            });
                                                                           });
+                                                                          var prefs =
+                                                                              await SharedPreferences.getInstance();
+
+                                                                          prefs.setString(
+                                                                              'uniqueID',
+                                                                              _item.documentID);
+                                                                          prefs.setBool(
+                                                                              _item.documentID,
+                                                                              _liked);
                                                                         }),
                                                                     Text(
                                                                       '${_item.likes == null ? 0 : _item.likes} likes',
@@ -567,19 +593,33 @@ class _FeedssState extends State<Feedss> {
                                                                             .push(
                                                                           context,
                                                                           PageTransition(
-                                                                              duration: Duration(milliseconds: 400),
+                                                                              duration: Duration(milliseconds: 700),
                                                                               child: CommentScreen(_item.username, _item.documentID),
                                                                               type: PageTransitionType.downToUp),
                                                                         );
                                                                       },
                                                                     ),
-                                                                    Text(
-                                                                      '${_item.comments} comments',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: _darkTheme
-                                                                            ? Colors.white
-                                                                            : Colors.black,
+                                                                    InkWell(
+                                                                      onTap:
+                                                                          () {
+                                                                        Navigator
+                                                                            .push(
+                                                                          context,
+                                                                          PageTransition(
+                                                                              duration: Duration(milliseconds: 700),
+                                                                              child: CommentScreen(_item.username, _item.documentID),
+                                                                              type: PageTransitionType.downToUp),
+                                                                        );
+                                                                      },
+                                                                      child:
+                                                                          Text(
+                                                                        '${_item.comments} comments',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          color: _darkTheme
+                                                                              ? Colors.white
+                                                                              : Colors.black,
+                                                                        ),
                                                                       ),
                                                                     ),
                                                                   ],

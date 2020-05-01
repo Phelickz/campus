@@ -1,4 +1,6 @@
+import 'package:campus/services/theme_notifier.dart';
 import 'package:campus/state/authstate.dart';
+import 'package:campus/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -11,9 +13,11 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
+  var _darkTheme;
   @override
   Widget build(BuildContext context) {
-
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final formKey = GlobalKey<FormState>();
     TextEditingController _usernameController = TextEditingController();
     TextEditingController _emailController = TextEditingController();

@@ -1,6 +1,9 @@
 import 'package:campus/screens/login.dart';
+import 'package:campus/services/theme_notifier.dart';
+import 'package:campus/utils/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'editProfile.dart';
 
@@ -10,10 +13,11 @@ class ProfileEdit extends StatefulWidget {
   final username;
   final bio;
   final emailAddress;
-   final phone;
+  final phone;
   final EditMode editMode;
+  final profileUrl;
   ProfileEdit(
-      this.editMode, this.bio, this.emailAddress, this.username, this.phone);
+      this.editMode, this.bio, this.emailAddress, this.username, this.phone, this.profileUrl);
   @override
   _ProfileEditState createState() => _ProfileEditState(
       this.editMode, this.bio, this.emailAddress, this.username, this.phone);
@@ -31,10 +35,15 @@ class _ProfileEditState extends State<ProfileEdit> {
   final bio;
   final emailAddress;
   final phone;
+  var _darkTheme;
   // final phone;
   _ProfileEditState(
-  
-      this.editMode, this.bio, this.emailAddress,this.username,   this.phone,);
+    this.editMode,
+    this.bio,
+    this.emailAddress,
+    this.username,
+    this.phone,
+  );
 
   @override
   void didChangeDependencies() {
@@ -49,8 +58,10 @@ class _ProfileEditState extends State<ProfileEdit> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SafeArea(
-          child: Scaffold(
+      child: Scaffold(
         body: Stack(
           children: <Widget>[
             _background(context),
@@ -69,7 +80,7 @@ class _ProfileEditState extends State<ProfileEdit> {
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      color: Colors.grey[200],
+      color: _darkTheme ? Colors.black : Colors.grey[200],
     );
   }
 
@@ -85,9 +96,10 @@ class _ProfileEditState extends State<ProfileEdit> {
             Navigator.pop(context);
           },
           child: CircleAvatar(
-            backgroundColor: Colors.black,
+            backgroundColor: _darkTheme ? Colors.white : Colors.black,
             radius: 20,
-            child: Icon(Icons.cancel, color: Colors.white),
+            child: Icon(Icons.cancel,
+                color: _darkTheme ? Colors.black : Colors.white),
           ),
         ),
       ),
@@ -106,11 +118,11 @@ class _ProfileEditState extends State<ProfileEdit> {
               _formKey.currentState;
             },
             child: CircleAvatar(
-              backgroundColor: Colors.black,
+              backgroundColor: _darkTheme ? Colors.white : Colors.black,
               radius: 20,
               child: Icon(
                 Icons.done,
-                color: Colors.white,
+                color: _darkTheme ? Colors.black : Colors.white,
               ),
             ),
           )),
@@ -122,9 +134,9 @@ class _ProfileEditState extends State<ProfileEdit> {
       top: 30,
       left: MediaQuery.of(context).size.width * 0.4,
       child: CircleAvatar(
-        backgroundImage: AssetImage('assets/images/wpid-11.png'),
+        backgroundImage: NetworkImage(this.widget.profileUrl),
         radius: 40,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
       ),
     );
   }
@@ -141,7 +153,7 @@ class _ProfileEditState extends State<ProfileEdit> {
         child: Text(
           'Change Profile Picture',
           style: TextStyle(
-              color: Colors.black,
+              color: _darkTheme ? Colors.white : Colors.black,
               fontSize: 15,
               fontFamily: 'WorkSansSemiBold'),
         ),
@@ -160,61 +172,70 @@ class _ProfileEditState extends State<ProfileEdit> {
             child: Padding(
               padding: const EdgeInsets.only(right: 10, left: 10, top: 30),
               child: Form(
-                key: _formKey,
+                  key: _formKey,
                   child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Username',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  TextFormField(
-                    controller: _usernameController,
-                    decoration: InputDecoration(
-                        hoverColor: Colors.blue, focusColor: Colors.blue),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Email Address',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  TextFormField(
-                    validator: EmailValidator.validate,
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                        hoverColor: Colors.blue, focusColor: Colors.blue),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Biography',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  TextFormField(
-                    controller: _bioController,
-                    decoration: InputDecoration(
-                        hoverColor: Colors.blue, focusColor: Colors.blue),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Phone',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  TextFormField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(
-                        hoverColor: Colors.blue, focusColor: Colors.blue),
-                  ),
-                ],
-              )),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Username',
+                        style: TextStyle(
+                            color: _darkTheme ? Colors.white : Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      TextFormField(
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                            hoverColor: Colors.blue, focusColor: Colors.blue),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Email Address',
+                        style: TextStyle(
+                            color: _darkTheme ? Colors.white : Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      TextFormField(
+                        validator: EmailValidator.validate,
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                            hoverColor: Colors.blue, focusColor: Colors.blue),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Biography',
+                        style: TextStyle(
+                            color: _darkTheme ? Colors.white : Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      TextFormField(
+                        controller: _bioController,
+                        decoration: InputDecoration(
+                            hoverColor: Colors.blue, focusColor: Colors.blue),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Phone',
+                        style: TextStyle(
+                            color: _darkTheme ? Colors.white : Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: InputDecoration(
+                            hoverColor: Colors.blue, focusColor: Colors.blue),
+                      ),
+                    ],
+                  )),
             ),
           );
         }));
