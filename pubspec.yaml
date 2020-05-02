@@ -43,6 +43,7 @@ dependencies:
   shared_preferences:
   day_night_switch:
   flutter_staggered_grid_view:
+  geolocator:
 
 
   

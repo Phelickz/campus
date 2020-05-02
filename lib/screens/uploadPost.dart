@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:path/path.dart';
 import 'package:photofilters/photofilters.dart';
 import 'package:image/image.dart' as imageLib;
@@ -28,6 +29,9 @@ class _UploadPostState extends State<UploadPost> {
   final _username;
   _UploadPostState(this._profilePic, this._username);
 
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  Position _currentPosition;
+  String _currentAddress;
   File _imageFile;
   File _videoFile;
   String fileName;
@@ -320,7 +324,10 @@ class _UploadPostState extends State<UploadPost> {
                                     hintText: 'Say Something...'),
                               )),
                         ),
-                      )
+                      ),
+                      FlatButton(onPressed: (){
+                        _getCurrentLocation();
+                      }, child: Text('Location'))
                     ],
                   );
                 }else{
@@ -371,5 +378,36 @@ class _UploadPostState extends State<UploadPost> {
             }),
       );
     });
+  }
+
+  _getCurrentLocation() {
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+
+      _getAddressFromLatLng();
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  _getAddressFromLatLng() async {
+    try {
+      List<Placemark> p = await geolocator.placemarkFromCoordinates(
+          _currentPosition.latitude, _currentPosition.longitude);
+
+      Placemark place = p[0];
+
+      setState(() {
+        _currentAddress =
+            "${place.locality}, ${place.postalCode}, ${place.country}";
+      });
+      print(_currentAddress);
+    } catch (e) {
+      print(e);
+    }
   }
 }
