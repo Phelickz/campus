@@ -31,14 +31,14 @@ Future<bool> addPost(
   File imagefile,
   String profilePic,
   String username,
-  File videoUrl,
+  File videofile,
 ) async {
   final DocumentReference _documentReference =
       _firestore.collection(_collectionPost).document();
 
   var _timeKey = new DateTime.now();
 
-  if (profilePic != null) {
+  if (imagefile != null) {
     final StorageReference _postImageRef =
         FirebaseStorage.instance.ref().child('Post Images');
     final StorageUploadTask _uploadTask =
@@ -56,7 +56,7 @@ Future<bool> addPost(
       'profilePic': profilePic,
       'username': username,
       'photoUrl': url,
-      'videoUrl': videoUrl,
+      'videoUrl': videofile,
       'text': post.text,
       'documentID': _documentReference.documentID,
       'createdAt': post.createdAt,
@@ -68,10 +68,10 @@ Future<bool> addPost(
         FirebaseStorage.instance.ref().child('Post Images');
     final StorageUploadTask _uploadTask = _postImageRef
         .child(_timeKey.toString() + "mp4")
-        .putFile(videoUrl, StorageMetadata(contentType: 'video/mp4'));
-    var imageUrl = await (await _uploadTask.onComplete).ref.getDownloadURL();
+        .putFile(videofile, StorageMetadata(contentType: 'video/mp4'));
+    var videoUrl = await (await _uploadTask.onComplete).ref.getDownloadURL();
 
-    String url = imageUrl.toString();
+    String url = videoUrl.toString();
 
     _documentReference.setData({
       'userId': uid,
@@ -518,6 +518,9 @@ Future<void> sendMessage(String _conversationID, Message _message) {
     case MessageType.Image:
       _messageType = 'image';
       break;
+    case MessageType.Video:
+      _messageType = 'video';
+      break;
     default:
   }
   return _ref.updateData({
@@ -578,6 +581,56 @@ Future<void> addImage(String _uid, File _imagefile, String _conversationID,
       break;
     case MessageType.Image:
       _messageType = 'image';
+      break;
+    case MessageType.Video:
+      _messageType = 'video';
+      break;
+    default:
+  }
+  await _documentReference.updateData({
+    "messages": FieldValue.arrayUnion([
+      {
+        'message': url,
+        'senderID': _message.senderID,
+        'timestamp': _message.timestamp,
+        'type': _messageType
+      }
+    ])
+  });
+  print('post added');
+  return _documentReference.documentID != null;
+}
+
+Future<void> addVideo(String _uid, File _videofile, String _conversationID,
+    Message _message) async {
+  final DocumentReference _documentReference =
+      _firestore.collection(_conversationCollection).document(_conversationID);
+
+  var _timeKey = new DateTime.now();
+  var _filename = basename(_videofile.path);
+  _filename += '${_timeKey.toString()}';
+  final StorageReference _postImageRef = FirebaseStorage.instance
+      .ref()
+      .child(_messages)
+      .child(_uid)
+      .child(_images);
+  final StorageUploadTask _uploadTask =
+      _postImageRef.child(_filename + "mp4").putFile(_videofile, StorageMetadata(contentType: 'video/mp4'));
+  var videoUrl = await (await _uploadTask.onComplete).ref.getDownloadURL();
+
+  String url = videoUrl.toString();
+
+
+  var _messageType = '';
+  switch (_message.type) {
+    case MessageType.Text:
+      _messageType = 'text';
+      break;
+    case MessageType.Image:
+      _messageType = 'image';
+      break;
+    case MessageType.Video:
+      _messageType = 'video';
       break;
     default:
   }

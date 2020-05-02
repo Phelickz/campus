@@ -2,6 +2,7 @@ import 'package:campus/screens/feedss.dart';
 import 'package:campus/services/theme_notifier.dart';
 import 'package:campus/state/authstate.dart';
 import 'package:campus/utils/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -65,10 +66,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Text(
                       'Dark Mode',
                       style: TextStyle(
-                        fontSize: 20,
-                        fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black
-                      ),
+                          fontSize: 20,
+                          fontFamily: 'WorkSansMedium',
+                          color: _darkTheme ? Colors.white : Colors.black),
                     ),
                     // DayNightSwitch(
 
@@ -98,9 +98,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(height: 23),
                 Text(
                   'NOTIFICATIONS',
-                  style:
-                      TextStyle(fontSize: 20, fontFamily: 'WorkSansSemiBold',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'WorkSansSemiBold',
+                      color: _darkTheme ? Colors.white : Colors.black),
                 ),
                 Divider(),
                 Row(
@@ -108,9 +109,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: <Widget>[
                     Text(
                       'Messages',
-                      style:
-                          TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'WorkSansMedium',
+                          color: _darkTheme ? Colors.white : Colors.black),
                     ),
                     Switch(
                       activeTrackColor: Colors.blue,
@@ -132,9 +134,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: <Widget>[
                     Text(
                       'New Follows',
-                      style:
-                          TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'WorkSansMedium',
+                          color: _darkTheme ? Colors.white : Colors.black),
                     ),
                     Switch(
                       activeTrackColor: Colors.blue,
@@ -156,9 +159,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: <Widget>[
                     Text(
                       'App Vibrations',
-                      style:
-                          TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'WorkSansMedium',
+                          color: _darkTheme ? Colors.white : Colors.black),
                     ),
                     Switch(
                       activeTrackColor: Colors.blue,
@@ -180,9 +184,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: <Widget>[
                     Text(
                       'App Sounds',
-                      style:
-                          TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'WorkSansMedium',
+                          color: _darkTheme ? Colors.white : Colors.black),
                     ),
                     Switch(
                       activeTrackColor: Colors.blue,
@@ -202,9 +207,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(height: 20),
                 Text(
                   'LEGAL',
-                  style:
-                      TextStyle(fontSize: 20, fontFamily: 'WorkSansSemiBold',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'WorkSansSemiBold',
+                      color: _darkTheme ? Colors.white : Colors.black),
                 ),
                 Divider(),
                 Row(
@@ -212,15 +218,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: <Widget>[
                     Text(
                       'Terms of Service',
-                      style:
-                          TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'WorkSansMedium',
+                          color: _darkTheme ? Colors.white : Colors.black),
                     ),
                     IconButton(
-                      icon: Icon(
-                        Icons.arrow_right,
-                        color: _darkTheme ? Colors.white : Colors.black
-                      ),
+                      icon: Icon(Icons.arrow_right,
+                          color: _darkTheme ? Colors.white : Colors.black),
                       onPressed: () {},
                     )
                   ],
@@ -230,15 +235,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: <Widget>[
                     Text(
                       'Privacy Policy',
-                      style:
-                          TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'WorkSansMedium',
+                          color: _darkTheme ? Colors.white : Colors.black),
                     ),
                     IconButton(
-                      icon: Icon(
-                        Icons.arrow_right,
-                        color: _darkTheme ? Colors.white : Colors.black
-                      ),
+                      icon: Icon(Icons.arrow_right,
+                          color: _darkTheme ? Colors.white : Colors.black),
                       onPressed: () {},
                     )
                   ],
@@ -248,14 +252,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: <Widget>[
                     Text(
                       'App Licenses',
-                      style:
-                          TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'WorkSansMedium',
+                          color: _darkTheme ? Colors.white : Colors.black),
                     ),
                     IconButton(
                       icon: Icon(
                         Icons.arrow_right,
-                        
                         color: _darkTheme ? Colors.white : Colors.black,
                       ),
                       onPressed: () {},
@@ -265,31 +269,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SizedBox(height: 20),
                 Text(
                   'CONTACT US',
-                  style:
-                      TextStyle(fontSize: 20, fontFamily: 'WorkSansSemiBold',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'WorkSansSemiBold',
+                      color: _darkTheme ? Colors.white : Colors.black),
                 ),
                 Divider(),
                 Text(
                   'Rate Us',
-                  style: TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'WorkSansMedium',
+                      color: _darkTheme ? Colors.white : Colors.black),
                 ),
                 SizedBox(
                   height: 20,
                 ),
                 Text(
                   'Help and Support',
-                  style: TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'WorkSansMedium',
+                      color: _darkTheme ? Colors.white : Colors.black),
                 ),
                 SizedBox(
                   height: 20,
                 ),
                 Text(
                   'Share This App',
-                  style: TextStyle(fontSize: 20, fontFamily: 'WorkSansMedium',
-                        color: _darkTheme ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'WorkSansMedium',
+                      color: _darkTheme ? Colors.white : Colors.black),
                 ),
                 SizedBox(height: 10),
                 Divider(),
@@ -304,20 +315,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                     child: Text(
                       'SIGN OUT',
-                      style:
-                          TextStyle(fontSize: 23, fontFamily: 'WorkSansBold',
-                        color: _darkTheme ? Colors.red : Colors.black),
+                      style: TextStyle(
+                          fontSize: 23,
+                          fontFamily: 'WorkSansBold',
+                          color: _darkTheme ? Colors.red : Colors.black),
                     ),
                   ),
                 ),
                 SizedBox(height: 30),
                 Center(
-                  child: Text(
-                    'DELETE MY ACCOUNT',
-                    style: TextStyle(
-                        fontSize: 23,
-                        fontFamily: 'WorkSansBold',
-                        color: Colors.red),
+                  child: InkWell(
+                    onTap: () async {
+                      await FirebaseAuth.instance.currentUser().then((user){
+                        user.delete();
+                        gotoLoginScreen(context);
+                      });
+                    },
+                    child: Text(
+                      'DELETE MY ACCOUNT',
+                      style: TextStyle(
+                          fontSize: 23,
+                          fontFamily: 'WorkSansBold',
+                          color: Colors.red),
+                    ),
                   ),
                 ),
                 SizedBox(height: 30),

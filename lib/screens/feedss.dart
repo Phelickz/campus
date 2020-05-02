@@ -1,14 +1,15 @@
 import 'package:campus/screens/chatscreen.dart';
 import 'package:campus/screens/commentScreen.dart';
+import 'package:campus/screens/feedsCard.dart';
 import 'package:campus/screens/matchscreen.dart';
-// import 'package:campus/screens/post.dart';
 import 'package:campus/screens/profile.dart';
 import 'package:campus/screens/usersProfile.dart';
-
+import 'package:campus/screens/videoPlayer.dart';
 import 'package:campus/services/theme_notifier.dart';
 import 'package:campus/state/userState.dart';
 import 'package:campus/utilities.dart';
 import 'package:campus/utils/theme.dart';
+import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,7 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:campus/services/model.dart';
 import 'package:campus/state/authstate.dart';
-
+import 'package:video_player/video_player.dart';
 import 'settings.dart';
 
 class Feedss extends StatefulWidget {
@@ -38,6 +39,8 @@ class _FeedssState extends State<Feedss> {
   // List<bool> _liked;
   bool _liked;
   String likedKey;
+
+  List<bool> _isLiked;
 
   Color _colors = Colors.black;
   Color _background = Colors.grey[200];
@@ -58,8 +61,7 @@ class _FeedssState extends State<Feedss> {
 
   void _restorePersistedPreference() async {
     var preferences = await SharedPreferences.getInstance();
-    var unique = preferences.getString('uniqueID');
-    var liked = preferences.getBool(unique) ?? false;
+    var liked = preferences.getBool('uniqque') ?? false;
     setState(() => this._liked = liked);
   }
 
@@ -242,428 +244,118 @@ class _FeedssState extends State<Feedss> {
         ),
         body: Stack(
           children: <Widget>[
-            _backgroundImage(context),
-
-            Container(
-              child: SingleChildScrollView(
+            SingleChildScrollView(
+              // scrollDirection: Axis.horizontal,
+              child: Container(
                 child: Column(
                   children: <Widget>[
+                    // Container(
+                    //   // padding: EdgeInsets.symmetric(horizontal: 24),
+                    //   color: _darkTheme ? Colors.white : Colors.white54,
+                    //   height: 160,
+                    //   width: MediaQuery.of(context).size.width,
+                    //   // color: Colo,
+                    //   child: ListView.builder(
+                    //       shrinkWrap: true,
+                    //       itemCount: userNotifier.usersPosts.length,
+                    //       scrollDirection: Axis.horizontal,
+                    //       itemBuilder: (BuildContext context, index) {
+                    //         var _feed = userNotifier.usersPosts[index];
+                    //         if (userNotifier.usersPosts.isNotEmpty) {
+                    //           return InkWell(
+                    //             onTap: () {},
+                    //             child: Padding(
+                    //               padding:
+                    //                   const EdgeInsets.only(left: 10, top: 55),
+                    //               child: Align(
+                    //                 alignment: Alignment.center,
+                    //                 child: CircleAvatar(
+                    //                   backgroundImage: NetworkImage(
+                    //                       _feed.photoUrl ?? _feed.profilePic),
+                    //                   radius: 37,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           );
+                    //         }
+                    //         return CircularProgressIndicator();
+                    //       }),
+                    // ),
+
                     Container(
-                      color: _darkTheme ? Colors.black : Colors.white54,
-                      height: 160,
-                      width: MediaQuery.of(context).size.width,
-                      // color: Colo,
                       child: Container(
-                        height: 120,
-                        // width: double.infinity,
-                        color: Colors.transparent,
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: userNotifier.usersPosts.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (BuildContext context, index) {
-                              var _feed = userNotifier.usersPosts[index];
-                              if (userNotifier.usersPosts.isNotEmpty) {
-                                return InkWell(
-                                  onTap: () {},
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10, top: 55),
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: CircleAvatar(
-                                        backgroundImage:
-                                            NetworkImage(_feed.photoUrl),
-                                        radius: 37,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                              return CircularProgressIndicator();
-                            }),
-                      ),
-                    ),
-                    Container(
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            height: MediaQuery.of(context).size.height,
-                            width: double.infinity,
-                            color: _darkTheme ? Colors.black : Colors.white54,
-                            child: StreamBuilder<List<Post>>(
-                                stream: auth.getPosts(),
-                                builder: (context, snapshot) {
-                                  var _data = snapshot.data;
-                                  return snapshot.hasData
-                                      ? ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: _data.length,
-                                          physics: BouncingScrollPhysics(),
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            var _item = _data[index];
-                                            final time = DateTime.now();
-                                            final postTime = _data[index].date;
-                                            final difference =
-                                                time.difference(postTime);
-                                            var newtime = timeago.format(
-                                                time.subtract(difference),
-                                                locale: 'en');
-                                            return Container(
-                                              decoration: new BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  boxShadow: [
-                                                    new BoxShadow(
-                                                      color: _darkTheme
-                                                          ? Colors.white24
-                                                          : Colors.black12,
-                                                      blurRadius: 3.0,
-                                                    ),
-                                                  ]),
-                                              height: 600,
-                                              width: double.infinity,
-                                              child: Card(
-                                                // elevation: _darkTheme ? 20 : 0,
-                                                color: _darkTheme
-                                                    ? Colors.black87
-                                                    : Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: SingleChildScrollView(
-                                                  child: Column(
-                                                    children: <Widget>[
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                left: 8.0,
-                                                                top: 10),
-                                                        child: Row(
-                                                          children: <Widget>[
-                                                            InkWell(
-                                                              onTap: () async {
-                                                                final uid = await Provider.of<
-                                                                            AuthenticationState>(
-                                                                        context,
-                                                                        listen:
-                                                                            false)
-                                                                    .currentUserId();
-                                                                if (_data[index]
-                                                                        .userId ==
-                                                                    uid) {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      CupertinoPageRoute(
-                                                                          builder: (context) =>
-                                                                              Profile(uid)));
-                                                                } else {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                          builder: (context) => UserProfile(
-                                                                              _item.userId,
-                                                                              _item.profilePic,
-                                                                              _item.username)));
-                                                                }
-                                                              },
-                                                              child:
-                                                                  CircleAvatar(
-                                                                backgroundColor:
-                                                                    _darkTheme
-                                                                        ? Colors
-                                                                            .white
-                                                                        : Colors
-                                                                            .white,
-                                                                backgroundImage:
-                                                                    NetworkImage(
-                                                                        _item
-                                                                            .profilePic),
-                                                                radius: 30,
-                                                              ),
-                                                            ),
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      left:
-                                                                          8.0),
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                children: <
-                                                                    Widget>[
-                                                                  Text(
-                                                                    _data[index]
-                                                                        .username,
-                                                                    style: TextStyle(
-                                                                        color: _darkTheme
-                                                                            ? Colors
-                                                                                .white
-                                                                            : Colors
-                                                                                .black,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        fontSize:
-                                                                            20),
-                                                                  ),
-                                                                  Row(
-                                                                    children: <
-                                                                        Widget>[
-                                                                      Icon(
-                                                                        Icons
-                                                                            .location_on,
-                                                                        color: _darkTheme
-                                                                            ? Colors.white54
-                                                                            : Colors.black45,
-                                                                      ),
-                                                                      Text(
-                                                                        'Benin City',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color: _darkTheme
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                        ),
-                                                                      )
-                                                                    ],
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-
-                                                      // decoration: BoxDecoration(
-                                                      //   color: Colors.red,
-                                                      //   borderRadius: BorderRadius.circular(20)
-                                                      // ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(top: 8.0),
-                                                        child: Container(
-                                                          width:
-                                                              double.infinity,
-                                                          height: 370,
-                                                          child: Card(
-                                                            shape: RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            0)),
-                                                            elevation: 0,
-                                                            color: Colors.white,
-                                                            child: _item.photoUrl !=
-                                                                    null
-                                                                ? Image.network(
-                                                                    _item
-                                                                        .photoUrl,
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  )
-                                                                : Container(),
-                                                          ),
-                                                        ),
-                                                      ),
-
-                                                      SizedBox(height: 10),
-                                                      Column(
-                                                        children: <Widget>[
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 15),
-                                                            child: Text(
-                                                              _item.text,
-                                                              style: TextStyle(
-                                                                  color: _darkTheme
-                                                                      ? Colors
-                                                                          .white
-                                                                      : Colors
-                                                                          .black87,
-                                                                  fontSize: 15,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w200,
-                                                                  fontFamily:
-                                                                      'WorkSansSemiBold'),
-                                                            ),
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 8.0,
-                                                                    right: 10),
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: <
-                                                                  Widget>[
-                                                                Row(
-                                                                  children: <
-                                                                      Widget>[
-                                                                    IconButton(
-                                                                        icon:
-                                                                            Icon(
-                                                                          _liked
-                                                                              ? Icons.favorite
-                                                                              : Icons.favorite_border,
-                                                                          color: _liked
-                                                                              ? Colors.red
-                                                                              : Colors.grey,
-                                                                        ),
-                                                                        onPressed:
-                                                                            () async {
-                                                                          final _auth = Provider.of<AuthenticationState>(
-                                                                              context,
-                                                                              listen: false);
-                                                                          final _uid =
-                                                                              await Provider.of<AuthenticationState>(context, listen: false).currentUserId();
-
-                                                                          await FirebaseAuth
-                                                                              .instance
-                                                                              .currentUser()
-                                                                              .then((user) {
-                                                                            setState(() {
-                                                                              _liked = !_liked;
-
-                                                                              likedKey = _item.documentID;
-
-                                                                              counter = _item.likes;
-
-                                                                              // counter++;
-                                                                              if (_liked) {
-                                                                                counter = counter + 2;
-                                                                                // setLiked(true);
-                                                                                _auth.updateLikess(_item.documentID);
-                                                                                _auth.postLikes(_uid, _item.documentID, user.photoUrl);
-                                                                              } else {
-                                                                                counter = counter + 1;
-                                                                                // setLiked(false);
-                                                                                _auth.removeLikesId(_uid, _item.documentID);
-                                                                                _auth.reduceLikes(_item.documentID);
-                                                                              }
-                                                                            });
-                                                                          });
-                                                                          var prefs =
-                                                                              await SharedPreferences.getInstance();
-
-                                                                          prefs.setString(
-                                                                              'uniqueID',
-                                                                              _item.documentID);
-                                                                          prefs.setBool(
-                                                                              _item.documentID,
-                                                                              _liked);
-                                                                        }),
-                                                                    Text(
-                                                                      '${_item.likes == null ? 0 : _item.likes} likes',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: _darkTheme
-                                                                            ? Colors.white
-                                                                            : Colors.black,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                Row(
-                                                                  children: <
-                                                                      Widget>[
-                                                                    IconButton(
-                                                                      icon:
-                                                                          Icon(
-                                                                        Icons
-                                                                            .mode_comment,
-                                                                        color: Colors
-                                                                            .blue,
-                                                                      ),
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator
-                                                                            .push(
-                                                                          context,
-                                                                          PageTransition(
-                                                                              duration: Duration(milliseconds: 700),
-                                                                              child: CommentScreen(_item.username, _item.documentID),
-                                                                              type: PageTransitionType.downToUp),
-                                                                        );
-                                                                      },
-                                                                    ),
-                                                                    InkWell(
-                                                                      onTap:
-                                                                          () {
-                                                                        Navigator
-                                                                            .push(
-                                                                          context,
-                                                                          PageTransition(
-                                                                              duration: Duration(milliseconds: 700),
-                                                                              child: CommentScreen(_item.username, _item.documentID),
-                                                                              type: PageTransitionType.downToUp),
-                                                                        );
-                                                                      },
-                                                                      child:
-                                                                          Text(
-                                                                        '${_item.comments} comments',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color: _darkTheme
-                                                                              ? Colors.white
-                                                                              : Colors.black,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                Row(
-                                                                  children: <
-                                                                      Widget>[
-                                                                    IconButton(
-                                                                        icon:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .timer,
-                                                                          color:
-                                                                              Colors.red,
-                                                                        ),
-                                                                        onPressed:
-                                                                            () {}),
-                                                                    Text(
-                                                                      '${newtime}',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: _darkTheme
-                                                                            ? Colors.white
-                                                                            : Colors.black,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          )
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          color: _darkTheme ? Colors.black : Colors.white54,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  // padding: EdgeInsets.symmetric(horizontal: 24),
+                                  color: _darkTheme
+                                      ? Colors.black
+                                      : Colors.white54,
+                                  height: 160,
+                                  width: MediaQuery.of(context).size.width,
+                                  // color: Colo,
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: userNotifier.usersPosts.length,
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder:
+                                          (BuildContext context, index) {
+                                        var _feed =
+                                            userNotifier.usersPosts[index];
+                                        if (userNotifier
+                                            .usersPosts.isNotEmpty) {
+                                          return InkWell(
+                                            onTap: () {},
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 10, top: 55),
+                                              child: Align(
+                                                alignment: Alignment.center,
+                                                child: CircleAvatar(
+                                                  backgroundImage: NetworkImage(
+                                                      _feed.photoUrl ??
+                                                          _feed.profilePic),
+                                                  radius: 37,
                                                 ),
                                               ),
-                                            );
-                                          })
-                                      : CircularProgressIndicator();
-                                }),
-                          )
-                        ],
-                      ),
+                                            ),
+                                          );
+                                        }
+                                        return CircularProgressIndicator();
+                                      }),
+                                ),
+                                StreamBuilder<List<Post>>(
+                                    stream: auth.getPosts(),
+                                    builder: (context, snapshot) {
+                                      var _data = snapshot.data;
+                                      return snapshot.hasData
+                                          ? ListView.builder(
+                                              shrinkWrap: true,
+                                              itemCount: _data.length,
+                                              physics: BouncingScrollPhysics(),
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                var _item = _data[index];
+                                                final time = DateTime.now();
+                                                final postTime =
+                                                    _data[index].date;
+                                                final difference =
+                                                    time.difference(postTime);
+                                                var newtime = timeago.format(
+                                                    time.subtract(difference),
+                                                    locale: 'en');
+                                                return FeedCard(_item, newtime);
+                                              })
+                                          : CircularProgressIndicator();
+                                    }),
+                              ],
+                            ),
+                          )),
                     )
                   ],
                 ),

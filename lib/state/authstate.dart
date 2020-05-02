@@ -203,6 +203,10 @@ class AuthenticationState with ChangeNotifier {
     return addImage(uid, _file, conversationID, _message);
   }
 
+  sendAVideo(uid, File _file, String conversationID, Message _message) {
+    return addVideo(uid, _file, conversationID, _message);
+  }
+
   createNewMessage(String _currentID, String _recepientID,
       Future<void> _onSuccess(String _conversationID)) {
     createOrGetConversations(_currentID, _recepientID, _onSuccess);

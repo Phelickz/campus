@@ -111,7 +111,7 @@ class _HomeState extends State<Home> {
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
                       decoration: BoxDecoration(
-                          color: _darkTheme? Colors.black87: Colors.white,
+                          color: _darkTheme ? Colors.black87 : Colors.white,
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(30),
                               topRight: Radius.circular(30))),
@@ -125,7 +125,9 @@ class _HomeState extends State<Home> {
                                   Text(
                                     "Recent",
                                     style: TextStyle(
-                                        color: _darkTheme? Colors.white :Colors.black45,
+                                        color: _darkTheme
+                                            ? Colors.white
+                                            : Colors.black45,
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600),
                                   ),
@@ -147,21 +149,43 @@ class _HomeState extends State<Home> {
                                         shrinkWrap: true,
                                         physics: ClampingScrollPhysics(),
                                         itemBuilder: (context, index) {
-                                          return ChatTile(
-                                            
-                                            imgUrl: _data[index].image,
-                                            name: _data[index].name,
-                                            lastMessage: _data[index].type == MessageType.Text ?
-                                                _data[index].lastMessage : 'Attachment: photo',
-                                            haveunreadmessages: false,
-                                            unreadmessages: 1,
-                                            lastSeenTime: timeago.format(
-                                                _data[index]
-                                                    .timestamp
-                                                    .toDate()),
-                                            conversationID:
-                                                _data[index].conversationID,
-                                            id: _data[index].id, uid: _uid,
+                                          return InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ChatScreen(
+                                                    _uid,
+                                                    _data[index].conversationID,
+                                                    _data[index].id,
+                                                    _data[index].image,
+                                                    _data[index].name,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: ChatTile(
+                                              imgUrl: _data[index].image,
+                                              name: _data[index].name,
+                                              lastMessage: _data[index].type ==
+                                                      MessageType.Text
+                                                  ? _data[index].lastMessage
+                                                  : _data[index].type ==
+                                                          MessageType.Image
+                                                      ? 'Attachment: Photo'
+                                                      : 'Attachment: Video',
+                                              haveunreadmessages: false,
+                                              unreadmessages: 1,
+                                              lastSeenTime: timeago.format(
+                                                  _data[index]
+                                                      .timestamp
+                                                      .toDate()),
+                                              conversationID:
+                                                  _data[index].conversationID,
+                                              id: _data[index].id,
+                                              uid: _uid,
+                                            ),
                                           );
                                         })
                                     : CircularProgressIndicator();
@@ -260,7 +284,6 @@ class ChatTile extends StatelessWidget {
                       id,
                       imgUrl,
                       name,
-                      
                     )));
       },
       child: Container(
@@ -287,7 +310,7 @@ class ChatTile extends StatelessWidget {
                   Text(
                     name,
                     style: TextStyle(
-                        color: _darkTheme ? Colors.white:Colors.black87,
+                        color: _darkTheme ? Colors.white : Colors.black87,
                         fontSize: 17,
                         fontWeight: FontWeight.w600),
                   ),
@@ -295,9 +318,11 @@ class ChatTile extends StatelessWidget {
                     height: 8,
                   ),
                   Text(
-                    lastMessage.length >= 30 ? lastMessage.substring(0, 25) + '...' : lastMessage,
+                    lastMessage.length >= 30
+                        ? lastMessage.substring(0, 25) + '...'
+                        : lastMessage,
                     style: TextStyle(
-                        color: _darkTheme? Colors.white: Colors.black54,
+                        color: _darkTheme ? Colors.white : Colors.black54,
                         fontSize: 15,
                         fontFamily: "Neue Haas Grotesk"),
                   )

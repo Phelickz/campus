@@ -13,6 +13,7 @@ class Post {
   DateTime time;
   Timestamp createdAt;
   bool liked;
+  String videoUrl;
 
   Post(
       {this.liked,
@@ -26,6 +27,7 @@ class Post {
       this.userId,
       this.likes,
       this.comments,
+      this.videoUrl,
       this.createdAt});
 
   factory Post.fromMap(dynamic doc) => Post(
@@ -37,6 +39,7 @@ class Post {
       likes: doc['likes'],
       date: doc["date"].toDate(),
       photoUrl: doc["photoUrl"],
+      videoUrl: doc['videoUrl'],
       text: doc["text"],
       userId: doc["userId"],
       time: doc['time'].toDate(),
@@ -55,24 +58,30 @@ class User {
       phone,
       createdAt;
 
-  User({this.bio, this.createdAt, this.documentId, this.email, this.followers, this.following,
-      this.photoUrl, this.uid, this.username, this.phone});
+  User(
+      {this.bio,
+      this.createdAt,
+      this.documentId,
+      this.email,
+      this.followers,
+      this.following,
+      this.photoUrl,
+      this.uid,
+      this.username,
+      this.phone});
 
   factory User.fromMap(dynamic data) => User(
-    phone : data['phone'],
-    bio : data['bio'],
-    documentId : data['documentId'],
-    email : data['email'],
-    followers : data['followers'].toString(),
-    following : data['following'].toString(),
-    photoUrl : data['photoUrl'],
-    uid : data['uid'],
-    username : data['username'],
-    createdAt: data['createdAt']
-  );
+      phone: data['phone'],
+      bio: data['bio'],
+      documentId: data['documentId'],
+      email: data['email'],
+      followers: data['followers'].toString(),
+      following: data['following'].toString(),
+      photoUrl: data['photoUrl'],
+      uid: data['uid'],
+      username: data['username'],
+      createdAt: data['createdAt']);
 }
-
-
 
 class Feeds {
   String userId;
@@ -106,7 +115,6 @@ class Feeds {
       );
 }
 
-
 class Likes {
   String userId;
 
@@ -128,8 +136,18 @@ class Users {
       phone,
       posts;
 
-  Users(this.bio, this.posts, this.documentId, this.email, this.createdAt,this.followers, this.following,
-      this.photoUrl, this.uid, this.username, this.phone);
+  Users(
+      this.bio,
+      this.posts,
+      this.documentId,
+      this.email,
+      this.createdAt,
+      this.followers,
+      this.following,
+      this.photoUrl,
+      this.uid,
+      this.username,
+      this.phone);
 
   Users.fromMap(Map<String, dynamic> data) {
     phone = data['phone'];
@@ -176,19 +194,21 @@ class ConversationSnippet {
         case 'image':
           _messageType = MessageType.Image;
           break;
+        case 'video':
+        _messageType = MessageType.Video;
+        break;
         default:
       }
     }
     return ConversationSnippet(
-      id: _snapshot.documentID,
-      conversationID: _data['conversationID'],
-      lastMessage: _data['lastMessage'] != null ? _data['lastMessage'] : "",
-      unseenCount: _data['unseenCount'],
-      timestamp: _data['timestamp'],
-      name: _data['username'],
-      image: _data['image'],
-      type: _messageType
-    );
+        id: _snapshot.documentID,
+        conversationID: _data['conversationID'],
+        lastMessage: _data['lastMessage'] != null ? _data['lastMessage'] : "",
+        unseenCount: _data['unseenCount'],
+        timestamp: _data['timestamp'],
+        name: _data['username'],
+        image: _data['image'],
+        type: _messageType);
   }
 }
 
@@ -211,8 +231,9 @@ class Conversation {
 
     if (_messages != null) {
       _messages = _messages.map((_m) {
-        var _messageType =
-            _m['type'] == 'text' ? MessageType.Text : MessageType.Image;
+        var _messageType = _m['type'] == 'text'
+            ? MessageType.Text
+            : _m['type'] == 'image' ? MessageType.Image : MessageType.Video;
         return Message(
           senderID: _m['senderID'],
           content: _m['message'],
@@ -231,7 +252,7 @@ class Conversation {
   }
 }
 
-enum MessageType { Text, Image }
+enum MessageType { Text, Image, Video }
 
 class Message {
   final String senderID;
@@ -250,16 +271,20 @@ class Comments {
   DateTime date;
   Timestamp timestamp;
 
-  Comments({this.photoUrl, this.timestamp, this.message, this.userId, this.documentId, this.date});
+  Comments(
+      {this.photoUrl,
+      this.timestamp,
+      this.message,
+      this.userId,
+      this.documentId,
+      this.date});
 
   factory Comments.fromFirestore(DocumentSnapshot _snapshot) {
-    
     return Comments(
         documentId: _snapshot.documentID,
         userId: _snapshot['userId'],
         photoUrl: _snapshot['photoUrl'],
         timestamp: _snapshot['timestamp'],
         message: _snapshot['message']);
-        
   }
 }

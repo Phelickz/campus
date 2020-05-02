@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 
-
-
+import 'package:chewie/chewie.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
 import 'package:photofilters/photofilters.dart';
@@ -13,15 +12,15 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
-
+import 'package:video_player/video_player.dart';
 
 class UploadPost extends StatefulWidget {
   final _profilePic;
   final _username;
   UploadPost(this._profilePic, this._username);
   @override
-  _UploadPostState createState() => _UploadPostState(this._profilePic, this._username);
+  _UploadPostState createState() =>
+      _UploadPostState(this._profilePic, this._username);
 }
 
 class _UploadPostState extends State<UploadPost> {
@@ -30,21 +29,26 @@ class _UploadPostState extends State<UploadPost> {
   _UploadPostState(this._profilePic, this._username);
 
   File _imageFile;
+  File _videoFile;
   String fileName;
   List<Filter> filters = presetFiltersList;
 
   TextEditingController _textEditingController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
-  
+
   // Select an image via gallery or camera
 
   Future<void> _pickImage(ImageSource source) async {
-    
     File selected = await ImagePicker.pickImage(source: source);
 
+    setState(() {});
+  }
+
+  Future<void> _pickVideo(ImageSource source) async {
+    File _selected = await ImagePicker.pickVideo(source: source);
     setState(() {
-      
+      _videoFile = _selected;
     });
   }
 
@@ -52,59 +56,58 @@ class _UploadPostState extends State<UploadPost> {
 
   Future<void> _cropImage() async {
     File cropped = await ImageCropper.cropImage(
-      sourcePath: _imageFile.path,
-      cropStyle: CropStyle.circle,
-      aspectRatioPresets: Platform.isAndroid
-          ? [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9
-            ]
-          : [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio5x3,
-              CropAspectRatioPreset.ratio5x4,
-              CropAspectRatioPreset.ratio7x5,
-              CropAspectRatioPreset.ratio16x9
-            ],
-      androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Cropper',
-          toolbarColor: Colors.deepOrange,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false),
-      iosUiSettings: IOSUiSettings(
-        title: 'Cropper',
-      )
-    );
+        sourcePath: _imageFile.path,
+        cropStyle: CropStyle.circle,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          title: 'Cropper',
+        ));
     setState(() {
       _imageFile = cropped ?? _imageFile;
     });
   }
 
   //remove image
-  void _clear(){
+  void _clear() {
     setState(() {
-      _imageFile=null;
+      _imageFile = null;
+      _videoFile = null;
     });
   }
 
   // Retrieve lost data b ecause most times after picking an image, the app restarts and loses the image file
   Future<void> retrieveLostData() async {
-    final LostDataResponse response =
-        await ImagePicker.retrieveLostData();
+    final LostDataResponse response = await ImagePicker.retrieveLostData();
     if (response == null) {
       return;
     }
     if (response.file != null) {
       setState(() {
         if (response.type == RetrieveType.video) {
-          _imageFile = response.file;
+          _videoFile = response.file;
         } else {
           _imageFile = response.file;
         }
@@ -118,17 +121,17 @@ class _UploadPostState extends State<UploadPost> {
     fileName = basename(_imageFile.path);
     var image = imageLib.decodeImage(_imageFile.readAsBytesSync());
     image = imageLib.copyResize(image, width: 600);
-     Map imagefile = await Navigator.push(
+    Map imagefile = await Navigator.push(
       context,
       new MaterialPageRoute(
         builder: (context) => new PhotoFilterSelector(
-              title: Text("Edit Photo"),
-              image: image,
-              filters: presetFiltersList,
-              filename: fileName,
-              loader: Center(child: CircularProgressIndicator()),
-              fit: BoxFit.contain,
-            ),
+          title: Text("Edit Photo"),
+          image: image,
+          filters: presetFiltersList,
+          filename: fileName,
+          loader: Center(child: CircularProgressIndicator()),
+          fit: BoxFit.contain,
+        ),
       ),
     );
     if (imagefile != null && imagefile.containsKey('image_filtered')) {
@@ -138,116 +141,235 @@ class _UploadPostState extends State<UploadPost> {
       print(_imageFile.path);
     }
   }
+
+  void _showDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Select'),
+            content: Text('Choose a method'),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  _pickImage(ImageSource.gallery);
+                },
+                child: Text('Gallery'),
+              ),
+              FlatButton(
+                onPressed: () {
+                  _pickImage(ImageSource.camera);
+                },
+                child: Text('Camera'),
+              ),
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        });
+  }
+
+  void _showSecondDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Select'),
+            content: Text('Choose a method'),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  _pickVideo(ImageSource.gallery);
+                },
+                child: Text('Gallery'),
+              ),
+              FlatButton(
+                onPressed: () {
+                  _pickVideo(ImageSource.camera);
+                },
+                child: Text('Camera'),
+              ),
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     retrieveLostData();
     // SnackBarService.instance.buildContext = context;
-    return Consumer<AuthenticationState>(
-      builder: (builder, authState, child){
-          return Scaffold(
+    return Consumer<AuthenticationState>(builder: (builder, authState, child) {
+      return Scaffold(
         bottomNavigationBar: BottomAppBar(
           color: Colors.red,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.photo_camera), 
-                  onPressed: (){_pickImage(ImageSource.camera);}
-                  ),
-                IconButton(
-                  icon: Icon(Icons.photo_library), 
-                  onPressed: (){_pickImage(ImageSource.gallery);})
-              ],
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              IconButton(
+                  icon: Icon(Icons.add_a_photo),
+                  onPressed: () {
+                    _showDialog(context);
+                  }),
+              IconButton(
+                  icon: Icon(Icons.videocam),
+                  onPressed: () {
+                   _showSecondDialog(context);
+                  })
+            ],
           ),
+        ),
         appBar: AppBar(
-          
           backgroundColor: Colors.red,
           title: Text('Upload a post'),
           centerTitle: true,
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.cloud_upload), 
-              onPressed: () async{
-              final _uid = await Provider.of<AuthenticationState>(context, listen: false).currentUserId();
+                icon: Icon(Icons.cloud_upload),
+                onPressed: () async {
+                  final _uid = await Provider.of<AuthenticationState>(context,
+                          listen: false)
+                      .currentUserId();
 
-                final form = formKey.currentState;
-                form.save();
-                authState.addPosts(
-                  Post(
-                    text: _textEditingController.text.isEmpty ? '' : _textEditingController.text,
-                    likes: 0,
-                    comments: 0,
-                    createdAt: Timestamp.now(),
-                    date: DateTime.now(),
-                    time: DateTime.now(),
-                    liked: false
-                  ), _uid, _imageFile, _profilePic, _username, null);
-                   Navigator.pop(context);
-              })
+                  final form = formKey.currentState;
+                  form.save();
+                  _imageFile != null ?
+                  authState.addPosts(
+                      Post(
+                          text: _textEditingController.text.isEmpty
+                              ? ''
+                              : _textEditingController.text,
+                          likes: 0,
+                          comments: 0,
+                          createdAt: Timestamp.now(),
+                          date: DateTime.now(),
+                          time: DateTime.now(),
+                          liked: false),
+                      _uid,
+                      _imageFile,
+                      _profilePic,
+                      _username,
+                      null) : authState.addPosts(
+                      Post(
+                          text: _textEditingController.text.isEmpty
+                              ? ''
+                              : _textEditingController.text,
+                          likes: 0,
+                          comments: 0,
+                          createdAt: Timestamp.now(),
+                          date: DateTime.now(),
+                          time: DateTime.now(),
+                          liked: false),
+                      _uid,
+                      null,
+                      _profilePic,
+                      _username,
+                      _videoFile);
+                  Navigator.pop(context);
+                })
           ],
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios), 
-            onPressed: (){
-              Navigator.pop(context);
-            }),
+              icon: Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
         ),
         body: FutureBuilder(
             future: authState.currentUser(),
-            builder: (context, snapshot){
-              if(snapshot.connectionState == ConnectionState.done){
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
                 if (_imageFile != null) {
                   return ListView(
-                  children: <Widget>[
-                    
-                      Image.file(_imageFile),  
-                      
-
+                    children: <Widget>[
+                      Image.file(_imageFile),
                       Row(
-                        
                         children: <Widget>[
                           FlatButton(
-                            onPressed: _cropImage, 
-                            child: Icon(Icons.crop)
-                            ),
+                              onPressed: _cropImage, child: Icon(Icons.crop)),
                           FlatButton(
-                            onPressed: _clear, 
-                            child: Icon(Icons.refresh)
-                            ),
+                              onPressed: _clear, child: Icon(Icons.refresh)),
                           FlatButton(
                             child: Icon(Icons.edit),
-                            onPressed: (){getImage(context);},)
+                            onPressed: () {
+                              getImage(context);
+                            },
+                          )
                         ],
-                        
-                        ),
-
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Container(
                           width: double.infinity,
                           child: Form(
-                            key: formKey,
-                            child: TextFormField(
-                              maxLines: 3,
-                              controller: _textEditingController,
-                              decoration: InputDecoration(
-                                
-                                fillColor: Colors.white,
-                                filled: true,
-                                hintText: 'Say Something...'
-                              ),
-                            )
-                            ),
+                              key: formKey,
+                              child: TextFormField(
+                                maxLines: 3,
+                                controller: _textEditingController,
+                                decoration: InputDecoration(
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    hintText: 'Say Something...'),
+                              )),
                         ),
                       )
-                    
-                  ],
-                );
-                } return SizedBox(height: 0);
-            } return CircularProgressIndicator();
-            }
-          ),
-      );}
-    );
+                    ],
+                  );
+                }else{
+                  if(_videoFile != null){
+                    return ListView(
+                    children: <Widget>[
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        width: MediaQuery.of(context).size.width,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: mounted? Chewie(
+                            controller: ChewieController(
+                              videoPlayerController: VideoPlayerController.file(_videoFile),
+                              aspectRatio: 3/2,
+                              autoPlay: true,
+                              looping: true,
+                            ),
+                          ) : Container(),
+                        ),
+                      ),
+                     
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
+                          width: double.infinity,
+                          child: Form(
+                              key: formKey,
+                              child: TextFormField(
+                                maxLines: 3,
+                                controller: _textEditingController,
+                                decoration: InputDecoration(
+                                    fillColor: Colors.grey[800],
+                                    filled: true,
+                                    
+                                    hintText: 'Say Something...'),
+                              )),
+                        ),
+                      )
+                    ],
+                  );
+                  }
+                  return SizedBox();
+                }
+                 
+              }
+              return CircularProgressIndicator();
+            }),
+      );
+    });
   }
 }

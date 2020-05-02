@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:campus/screens/feedss.dart';
+import 'package:campus/screens/playPostVideo.dart';
 import 'package:campus/screens/uploadPost.dart';
 import 'package:campus/services/model.dart';
 import 'package:campus/services/theme_notifier.dart';
@@ -243,199 +244,231 @@ class _ProfileState extends State<Profile> {
                     left: 10.0,
                     right: 10.0,
                     child: StreamBuilder(
-                      stream: getUsersDataSnapshots(context),
-                      builder: (context, snapshot) {
-                        return snapshot.hasData ? ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: snapshot.data.documents.length,
-                            // physics: BouncingScrollPhysics(),
-                            itemBuilder: (BuildContext context, int index) {
-                              var item = snapshot.data.documents[index];
+                        stream: getUsersDataSnapshots(context),
+                        builder: (context, snapshot) {
+                          return snapshot.hasData
+                              ? ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data.documents.length,
+                                  // physics: BouncingScrollPhysics(),
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    var item = snapshot.data.documents[index];
 
-                              // setState(() {
-                              //   profilePic = item.photoUrl;
-                              //   username = item.username;
-                              // });
-                              return Container(
-                                color: Colors.transparent,
-                                margin: EdgeInsets.only(left: 10, right: 10),
-                                height: 280,
-                                width: MediaQuery.of(context).size.width,
-                                // decoration: BoxDecoration(
-                                //   boxShadow: [
-                                //       BoxShadow(
-                                //         spreadRadius: 0.0,
-                                //         color: Colors.grey,
-                                //         offset: Offset(1.0, 0.75),
-                                //         blurRadius: 1.0
-                                //       )
-                                //     ],
-                                //   color: Colors.white,
-                                //   borderRadius: BorderRadius.only(
-                                //     bottomLeft: Radius.circular(15),
-                                //     bottomRight: Radius.circular(15)
-                                //   )
-                                // ),
-                                child: Container(
-                                  color: Colors.transparent,
+                                    // setState(() {
+                                    //   profilePic = item.photoUrl;
+                                    //   username = item.username;
+                                    // });
+                                    return Container(
+                                      color: Colors.transparent,
+                                      margin:
+                                          EdgeInsets.only(left: 10, right: 10),
+                                      height: 280,
+                                      width: MediaQuery.of(context).size.width,
+                                      // decoration: BoxDecoration(
+                                      //   boxShadow: [
+                                      //       BoxShadow(
+                                      //         spreadRadius: 0.0,
+                                      //         color: Colors.grey,
+                                      //         offset: Offset(1.0, 0.75),
+                                      //         blurRadius: 1.0
+                                      //       )
+                                      //     ],
+                                      //   color: Colors.white,
+                                      //   borderRadius: BorderRadius.only(
+                                      //     bottomLeft: Radius.circular(15),
+                                      //     bottomRight: Radius.circular(15)
+                                      //   )
+                                      // ),
+                                      child: Container(
+                                        color: Colors.transparent,
 
-                                  // elevation: 5,
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        // Padding(
-                                        //   padding: const EdgeInsets.only(left:8.0),
-                                        //   child: Text('My Profile',
-                                        //     style: TextStyle(
-                                        //       fontSize: 25,
-                                        //       fontWeight: FontWeight.bold,
-                                        //       fontFamily: 'WorkSansSemiBold'
-                                        //     ),),
-                                        // ),
-                                        // SizedBox(height: 20,),
-                                        Align(
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 15.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                InkWell(
-                                                  onTap: () {},
-                                                  child: CircleAvatar(
-                                                    backgroundImage:
-                                                        NetworkImage(item['photoUrl']),
-                                                    radius: 30,
-                                                    backgroundColor: Colors.white,
+                                        // elevation: 5,
+                                        child: SingleChildScrollView(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              // Padding(
+                                              //   padding: const EdgeInsets.only(left:8.0),
+                                              //   child: Text('My Profile',
+                                              //     style: TextStyle(
+                                              //       fontSize: 25,
+                                              //       fontWeight: FontWeight.bold,
+                                              //       fontFamily: 'WorkSansSemiBold'
+                                              //     ),),
+                                              // ),
+                                              // SizedBox(height: 20,),
+                                              Align(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 15.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: <Widget>[
+                                                      InkWell(
+                                                        onTap: () {},
+                                                        child: CircleAvatar(
+                                                          backgroundImage:
+                                                              NetworkImage(item[
+                                                                  'photoUrl']),
+                                                          radius: 30,
+                                                          backgroundColor:
+                                                              Colors.white,
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 30.0),
+                                                        child: CircleAvatar(
+                                                          radius: 12,
+                                                          child: IconButton(
+                                                              icon: Icon(
+                                                                  Icons.edit,
+                                                                  size: 15),
+                                                              onPressed: () {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    CupertinoPageRoute(
+                                                                        builder: (context) => ProfileEdit(
+                                                                            EditMode.Editing,
+                                                                            item['username'],
+                                                                            item['bio'],
+                                                                            item['email'],
+                                                                            item['phone'],
+                                                                            item['photoUrl'])));
+                                                              }),
+                                                        ),
+                                                      )
+                                                    ],
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding: const EdgeInsets.only(
-                                                      top: 30.0),
-                                                  child: CircleAvatar(
-                                                    radius: 12,
-                                                    child: IconButton(
-                                                        icon: Icon(Icons.edit,
-                                                            size: 15),
-                                                        onPressed: () {
-                                                          Navigator.push(
-                                                              context,
-                                                              CupertinoPageRoute(
-                                                                  builder: (context) => ProfileEdit(
-                                                                      EditMode
-                                                                          .Editing,
-                                                                      item['username'],
-                                                                      item['bio'],
-                                                                      item['email'],
-                                                                      item['phone'],
-                                                                      item['photoUrl'])));
-                                                        }),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 10),
+                                              ),
+                                              SizedBox(height: 10),
 
-                                        Align(
-                                          child: Text(
-                                            item['username'],
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'WorkSansBold'),
-                                          ),
-                                        ),
-                                        SizedBox(height: 10),
-                                        Align(
-                                          child: Text(
-                                            item['email'],
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 10),
-                                        Align(
-                                          child: Text(
-                                            item['bio'],
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w400,
-                                                fontFamily: 'WorkSansBold'),
-                                          ),
-                                        ),
-                                        SizedBox(height: 40),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: <Widget>[
-                                            Column(
-                                              children: <Widget>[
-                                                Text(
-                                                  item['posts'].toString(),
+                                              Align(
+                                                child: Text(
+                                                  item['username'],
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 20,
-                                                      fontWeight: FontWeight.bold),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily:
+                                                          'WorkSansBold'),
                                                 ),
-                                                Text('Photos',
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.white60,
-                                                        fontWeight:
-                                                            FontWeight.bold))
-                                              ],
-                                            ),
-                                            Column(
-                                              children: <Widget>[
-                                                Text(item['followers'].toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                Text('Followers',
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.white60,
-                                                        fontWeight:
-                                                            FontWeight.bold))
-                                              ],
-                                            ),
-                                            Column(
-                                              children: <Widget>[
-                                                Text(item['following'].toString(),
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                Text('Following',
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color: Colors.white60,
-                                                        fontWeight:
-                                                            FontWeight.bold))
-                                              ],
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }) : CircularProgressIndicator();
-                      }
-                    ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              Align(
+                                                child: Text(
+                                                  item['email'],
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              Align(
+                                                child: Text(
+                                                  item['bio'],
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontFamily:
+                                                          'WorkSansBold'),
+                                                ),
+                                              ),
+                                              SizedBox(height: 40),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: <Widget>[
+                                                  Column(
+                                                    children: <Widget>[
+                                                      Text(
+                                                        item['posts']
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text('Posts',
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color: Colors
+                                                                  .white60,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold))
+                                                    ],
+                                                  ),
+                                                  Column(
+                                                    children: <Widget>[
+                                                      Text(
+                                                          item['followers']
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      Text('Followers',
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color: Colors
+                                                                  .white60,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold))
+                                                    ],
+                                                  ),
+                                                  Column(
+                                                    children: <Widget>[
+                                                      Text(
+                                                          item['following']
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      Text('Following',
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color: Colors
+                                                                  .white60,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold))
+                                                    ],
+                                                  ),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  })
+                              : CircularProgressIndicator();
+                        }),
                   ),
                   Positioned(
                       left: 20,
@@ -527,10 +560,28 @@ class _ProfileState extends State<Profile> {
                                                 : 3),
                                     itemBuilder:
                                         (BuildContext context, int index) {
-                                      return Image.network(
-                                        _data[index].photoUrl,
-                                        fit: BoxFit.cover,
-                                      );
+                                      return _data[index].photoUrl != null
+                                          ? Image.network(
+                                              _data[index].photoUrl,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Material(
+                                              child: IconButton(
+                                                  icon: Icon(
+                                                    FontAwesomeIcons.play,
+                                                    color: Colors.black,
+                                                    size: 50,
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                PlayVideo(_data[
+                                                                        index]
+                                                                    .videoUrl)));
+                                                  }),
+                                            );
                                     },
                                   )
                                 : Align(
