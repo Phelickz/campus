@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:campus/screens/videoPlayer.dart';
 import 'package:campus/services/model.dart';
 import 'package:campus/services/theme_notifier.dart';
 import 'package:campus/state/authstate.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:video_player/video_player.dart';
 
 import 'viewPhotoInChat.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -114,21 +112,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   Expanded(
                     child: TextFormField(
-                      validator: (_input) {
-                        if (_input.length == 0) {
-                          return 'Please Enter a message';
-                        }
-                        return null;
-                      },
-                      onChanged: (_input) {
-                        _formKey.currentState.save();
-                      },
-                      onSaved: (_input) {
-                        setState(() {
-                          _messageText = _input;
-                        });
-                      },
-                      // controller: _messageController,
+                      validator: Validator.validate,
+                      // onChanged: (_input) {
+                      //   _formKey.currentState.save();
+                      // },
+                      // onSaved: (_input) {
+                      //   setState(() {
+                      //     _messageText = _input;
+                      //   });
+                      // },
+                      controller: _messageController,
                       decoration: InputDecoration.collapsed(
                           hintText: "Type your message",
                           hintStyle: TextStyle(
@@ -153,13 +146,13 @@ class _ChatScreenState extends State<ChatScreen> {
                           _authState.sendAMessage(
                             this.widget._conversationID,
                             Message(
-                              content: _messageText,
+                              content: _messageController.text,
                               timestamp: Timestamp.now(),
                               senderID: this.widget.uid,
                               type: MessageType.Text,
                             ),
                           );
-                          _formKey.currentState.reset();
+                          _messageController.clear();
                           FocusScope.of(context).unfocus();
                         }
                       },
@@ -306,11 +299,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 ? _darkTheme ? Color(0xff003300) : Color(0xffff410f)
                 : _darkTheme ? Color(0xff39573B) : Color(0xfffff3f1),
             borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-                bottomLeft: isByMe ? Radius.circular(30) : Radius.circular(0),
-                bottomRight:
-                    isByMe ? Radius.circular(0) : Radius.circular(30))),
+                // topLeft: Radius.circular(30),
+                // topRight: Radius.circular(30),
+                bottomLeft: isByMe ? Radius.circular(30) : Radius.circular(0),)),
+                // bottomRight:
+                    // isByMe ? Radius.circular(0) : Radius.circular(30))),
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 7),
         child: GestureDetector(
           onTap: () {
@@ -330,10 +323,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.30,
-                    width: MediaQuery.of(context).size.width * 0.40,
+                    height: MediaQuery.of(context).size.height * 0.38,
+                    width: MediaQuery.of(context).size.width * 0.60,
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
+                        // borderRadius: BorderRadius.circular(20),
                         image: DecorationImage(
                             image: NetworkImage(_imageUrl), fit: BoxFit.cover)),
                   ),
@@ -559,5 +552,15 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           );
         });
+  }
+}
+
+class Validator {
+  static String validate(String value) {
+    if (value.isEmpty) {
+      return "Field cannot be empty";
+    }
+
+    return null;
   }
 }

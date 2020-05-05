@@ -136,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     topRight: Radius.circular(20),
                                     bottomLeft: Radius.circular(20))),
                             child: TextFormField(
-                              validator: PasswordValidator.validate,
+                              validator: UsernameValidator.validate,
                               focusNode: myFocusNodeUsername,
                               controller: _usernameController,
                               // obscureText: _obscureTextSignup,

@@ -167,6 +167,7 @@ class _SearchState extends State<Search> {
                       PageRouteBuilder(
                           transitionDuration: Duration(milliseconds: 400),
                           pageBuilder: (_, __, ___) => UserProfile(
+                            _uid,
                               _item['uid'],
                               _item['photoUrl'],
                               _item['username'])));

@@ -14,6 +14,7 @@ class Post {
   Timestamp createdAt;
   bool liked;
   String videoUrl;
+  String location;
 
   Post(
       {this.liked,
@@ -28,6 +29,7 @@ class Post {
       this.likes,
       this.comments,
       this.videoUrl,
+      this.location,
       this.createdAt});
 
   factory Post.fromMap(dynamic doc) => Post(
@@ -43,6 +45,7 @@ class Post {
       text: doc["text"],
       userId: doc["userId"],
       time: doc['time'].toDate(),
+      location: doc['location'],
       liked: doc['liked']);
 }
 
@@ -57,6 +60,7 @@ class User {
       documentId,
       phone,
       createdAt;
+  List<String> followersList, followingList;
 
   User(
       {this.bio,
@@ -68,6 +72,8 @@ class User {
       this.photoUrl,
       this.uid,
       this.username,
+      this.followersList,
+      this.followingList,
       this.phone});
 
   factory User.fromMap(dynamic data) => User(
@@ -80,6 +86,8 @@ class User {
       photoUrl: data['photoUrl'],
       uid: data['uid'],
       username: data['username'],
+      followersList: data['followersList'],
+      followingList: data['followingList'],
       createdAt: data['createdAt']);
 }
 
@@ -135,6 +143,7 @@ class Users {
       createdAt,
       phone,
       posts;
+  List followersList, followingList;
 
   Users(
       this.bio,
@@ -147,6 +156,8 @@ class Users {
       this.photoUrl,
       this.uid,
       this.username,
+      this.followersList,
+      this.followingList,
       this.phone);
 
   Users.fromMap(Map<String, dynamic> data) {
@@ -161,6 +172,8 @@ class Users {
     username = data['username'];
     createdAt = data['createdAt'].toString();
     posts = data['posts'].toString();
+    followersList = data['followersList'];
+    followingList = data['followingList'];
   }
 }
 
@@ -195,8 +208,8 @@ class ConversationSnippet {
           _messageType = MessageType.Image;
           break;
         case 'video':
-        _messageType = MessageType.Video;
-        break;
+          _messageType = MessageType.Video;
+          break;
         default:
       }
     }
@@ -287,4 +300,78 @@ class Comments {
         timestamp: _snapshot['timestamp'],
         message: _snapshot['message']);
   }
+}
+
+class Followers {
+  String photoUrl;
+  Timestamp timestamp;
+  String uid;
+  String username;
+  String userId;
+
+  Followers(
+      {this.photoUrl, this.timestamp, this.uid, this.username, this.userId});
+
+  factory Followers.fromMap(dynamic data) => Followers(
+      photoUrl: data['photoUrl'],
+      timestamp: data['timestamp'],
+      uid: data['uid'],
+      userId: data['userId'],
+      username: data['username']);
+}
+
+class Topic {
+  String userId;
+  String topic;
+  Timestamp timestamp;
+  String documentID;
+  int contributions;
+  String category;
+
+  Topic(
+      {this.contributions,
+      this.documentID,
+      this.timestamp,
+      this.topic,
+      this.category,
+      this.userId});
+
+  factory Topic.fromMap(dynamic doc) => Topic(
+      category: doc['category'],
+      contributions: doc['contributions'],
+      userId: doc['userId'],
+      timestamp: doc['timestamp'],
+      topic: doc['topic'],
+      documentID: doc['documentID']);
+}
+
+class Contributions {
+  String userId;
+  String profilePic;
+  String message;
+  Timestamp timestamp;
+  String username;
+  String documentID;
+  String photoUrl;
+  int feedback;
+
+  Contributions(
+      {this.message,
+      this.photoUrl,
+      this.timestamp,
+      this.userId,
+      this.username,
+      this.documentID,
+      this.profilePic,
+      this.feedback});
+
+  factory Contributions.fromMap(dynamic doc) => Contributions(
+      userId: doc['userId'],
+      photoUrl: doc['photoUrl'],
+      message: doc['message'],
+      timestamp: doc['timestamp'],
+      profilePic: doc['profilePic'],
+      username: doc['username'],
+      feedback: doc['feedback'],
+      documentID: doc['documentID']);
 }

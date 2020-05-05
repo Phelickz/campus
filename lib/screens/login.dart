@@ -244,10 +244,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Provider.of<AuthenticationState>(_context,
                                         listen: false)
                                     .login(_emailController.text,
-                                        _passwordController.text);
-                                            gotoHomeScreen(_context);
-                                // Navigator.push(context,
-                                //   MaterialPageRoute(builder: (context) => Feedss()));
+                                        _passwordController.text).then((signInUser){
+                                          gotoHomeScreen(_context);
+                                        });
+                                            
                               } catch (e) {
                                 print(e);
                               }

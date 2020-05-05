@@ -1,28 +1,19 @@
 import 'package:campus/screens/chatscreen.dart';
-import 'package:campus/screens/commentScreen.dart';
 import 'package:campus/screens/feedsCard.dart';
 import 'package:campus/screens/matchscreen.dart';
 import 'package:campus/screens/profile.dart';
-import 'package:campus/screens/usersProfile.dart';
-import 'package:campus/screens/videoPlayer.dart';
 import 'package:campus/services/theme_notifier.dart';
 import 'package:campus/state/userState.dart';
-import 'package:campus/utilities.dart';
 import 'package:campus/utils/theme.dart';
-import 'package:chewie/chewie.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:campus/services/firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:campus/services/model.dart';
 import 'package:campus/state/authstate.dart';
-import 'package:video_player/video_player.dart';
 import 'settings.dart';
 
 class Feedss extends StatefulWidget {
@@ -249,39 +240,6 @@ class _FeedssState extends State<Feedss> {
               child: Container(
                 child: Column(
                   children: <Widget>[
-                    // Container(
-                    //   // padding: EdgeInsets.symmetric(horizontal: 24),
-                    //   color: _darkTheme ? Colors.white : Colors.white54,
-                    //   height: 160,
-                    //   width: MediaQuery.of(context).size.width,
-                    //   // color: Colo,
-                    //   child: ListView.builder(
-                    //       shrinkWrap: true,
-                    //       itemCount: userNotifier.usersPosts.length,
-                    //       scrollDirection: Axis.horizontal,
-                    //       itemBuilder: (BuildContext context, index) {
-                    //         var _feed = userNotifier.usersPosts[index];
-                    //         if (userNotifier.usersPosts.isNotEmpty) {
-                    //           return InkWell(
-                    //             onTap: () {},
-                    //             child: Padding(
-                    //               padding:
-                    //                   const EdgeInsets.only(left: 10, top: 55),
-                    //               child: Align(
-                    //                 alignment: Alignment.center,
-                    //                 child: CircleAvatar(
-                    //                   backgroundImage: NetworkImage(
-                    //                       _feed.photoUrl ?? _feed.profilePic),
-                    //                   radius: 37,
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           );
-                    //         }
-                    //         return CircularProgressIndicator();
-                    //       }),
-                    // ),
-
                     Container(
                       child: Container(
                           height: MediaQuery.of(context).size.height,

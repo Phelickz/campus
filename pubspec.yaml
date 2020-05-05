@@ -44,6 +44,8 @@ dependencies:
   day_night_switch:
   flutter_staggered_grid_view:
   geolocator:
+  bot_toast:
+  path_provider: ^1.6.7
 
 
   

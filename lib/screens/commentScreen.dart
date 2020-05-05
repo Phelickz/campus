@@ -19,6 +19,7 @@ class CommentScreen extends StatefulWidget {
 class _CommentScreenState extends State<CommentScreen> {
   var _darkTheme;
   final _formKey = GlobalKey<FormState>();
+  final _commentController = TextEditingController();
   String _messageText;
   String _displayName;
   String _photoUrl;
@@ -95,20 +96,16 @@ class _CommentScreenState extends State<CommentScreen> {
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: TextFormField(
                           keyboardType: TextInputType.multiline,
-                          validator: (_input) {
-                            if (_input.length == 0) {
-                              return 'Please Enter a message';
-                            }
-                            return null;
-                          },
-                          onChanged: (_input) {
-                            _formKey.currentState.save();
-                          },
-                          onSaved: (_input) {
-                            setState(() {
-                              _messageText = _input;
-                            });
-                          },
+                          validator: Validator.validate,
+                          // onChanged: (_input) {
+                          //   _formKey.currentState.save();
+                          // },
+                          // onSaved: (_input) {
+                          //   setState(() {
+                          //     _messageText = _input;
+                          //   });
+                          // },
+                          controller: _commentController,
                           decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Type your comment'),
@@ -131,10 +128,10 @@ class _CommentScreenState extends State<CommentScreen> {
                                 _displayName,
                                 _photoUrl,
                                 Comments(
-                                  message: _messageText,
+                                  message: _commentController.text,
                                   timestamp: Timestamp.now(),
                                 ));
-                            _formKey.currentState.reset();
+                            _commentController.clear();
                             FocusScope.of(context).unfocus();
                           }
                         },
@@ -144,5 +141,16 @@ class _CommentScreenState extends State<CommentScreen> {
             ),
           );
         }));
+  }
+}
+
+
+class Validator {
+  static String validate(String value) {
+    if (value.isEmpty) {
+      return "Field cannot be empty";
+    }
+
+    return null;
   }
 }

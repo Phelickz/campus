@@ -48,6 +48,8 @@ class _FeedCardState extends State<FeedCard> {
     _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       decoration: new BoxDecoration(
+      color: Colors.white54,
+
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             new BoxShadow(
@@ -84,6 +86,7 @@ class _FeedCardState extends State<FeedCard> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => UserProfile(
+                                      uid,
                                       this.widget._item.userId,
                                       this.widget._item.profilePic,
                                       this.widget._item.username)));
@@ -117,7 +120,7 @@ class _FeedCardState extends State<FeedCard> {
                                     : Colors.black45,
                               ),
                               Text(
-                                'Benin City',
+                                this.widget._item.location ?? '',
                                 style: TextStyle(
                                   color:
                                       _darkTheme ? Colors.white : Colors.black,

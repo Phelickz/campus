@@ -19,6 +19,8 @@ import 'package:provider/provider.dart';
 import 'package:campus/state/authstate.dart';
 
 import 'chatscreen.dart';
+import 'followersList.dart';
+import 'followingList.dart';
 import 'profileEdit.dart';
 import 'settings.dart';
 
@@ -415,49 +417,75 @@ class _ProfileState extends State<Profile> {
                                                                       .bold))
                                                     ],
                                                   ),
-                                                  Column(
-                                                    children: <Widget>[
-                                                      Text(
-                                                          item['followers']
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontSize: 20,
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                      Text('Followers',
-                                                          style: TextStyle(
-                                                              fontSize: 20,
-                                                              color: Colors
-                                                                  .white60,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold))
-                                                    ],
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  FollowersList(
+                                                                      this
+                                                                          .widget
+                                                                          .uid)));
+                                                    },
+                                                    child: Column(
+                                                      children: <Widget>[
+                                                        Text(
+                                                            item['followersList']
+                                                                .length
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 20,
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                        Text('Followers',
+                                                            style: TextStyle(
+                                                                fontSize: 20,
+                                                                color: Colors
+                                                                    .white60,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold))
+                                                      ],
+                                                    ),
                                                   ),
-                                                  Column(
-                                                    children: <Widget>[
-                                                      Text(
-                                                          item['following']
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              fontSize: 20,
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                      Text('Following',
-                                                          style: TextStyle(
-                                                              fontSize: 20,
-                                                              color: Colors
-                                                                  .white60,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold))
-                                                    ],
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  FollowingList(
+                                                                      this
+                                                                          .widget
+                                                                          .uid)));
+                                                    },
+                                                    child: Column(
+                                                      children: <Widget>[
+                                                        Text(
+                                                            item['followingList']
+                                                                .length
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 20,
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                        Text('Following',
+                                                            style: TextStyle(
+                                                                fontSize: 20,
+                                                                color: Colors
+                                                                    .white60,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold))
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               )

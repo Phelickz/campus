@@ -105,7 +105,9 @@ Future<Map<String, String>> signUp(
           'phone': phone,
           'uid': user.uid,
           'followers': 0,
+          'followersList': [],
           'following': 0,
+          'followingList': [],
           'createdAt': Timestamp.now(),
           'documentId': _documentReference.documentID,
         }).catchError((e) {

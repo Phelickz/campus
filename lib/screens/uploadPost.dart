@@ -257,7 +257,8 @@ class _UploadPostState extends State<UploadPost> {
                           createdAt: Timestamp.now(),
                           date: DateTime.now(),
                           time: DateTime.now(),
-                          liked: false),
+                          liked: false,
+                          location: _currentAddress ?? ''),
                       _uid,
                       _imageFile,
                       _profilePic,
@@ -272,12 +273,14 @@ class _UploadPostState extends State<UploadPost> {
                           createdAt: Timestamp.now(),
                           date: DateTime.now(),
                           time: DateTime.now(),
-                          liked: false),
+                          liked: false,
+                          location: _currentAddress ?? ''),
                       _uid,
                       null,
                       _profilePic,
                       _username,
                       _videoFile);
+                      Scaffold.of(context).showSnackBar(SnackBar(backgroundColor: Colors.green ,content: Text('Post Upload Successful!')));
                   Navigator.pop(context);
                 })
           ],

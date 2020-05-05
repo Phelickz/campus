@@ -65,7 +65,7 @@ class AuthenticationState with ChangeNotifier {
     return await signUp(email, password, username, phone);
   }
 
-  void login(
+  login(
     email,
     password,
   ) {
@@ -120,8 +120,7 @@ class AuthenticationState with ChangeNotifier {
   }
 
   getcomments(documentId) {
-   return getCommentsList(documentId);
-    
+    return getCommentsList(documentId);
   }
 
   addPosts(Post post, String uid, File imageFile, String profilePic,
@@ -150,7 +149,8 @@ class AuthenticationState with ChangeNotifier {
     notifyListeners();
   }
 
-  postComments(String _postId, String _userId, String _photoUrl, Comments _comments) async {
+  postComments(String _postId, String _userId, String _photoUrl,
+      Comments _comments) async {
     await addComment(_postId, _userId, _photoUrl, _comments);
     notifyListeners();
   }
@@ -216,8 +216,54 @@ class AuthenticationState with ChangeNotifier {
     return getAllUsers();
   }
 
-  getComments(String _postId){
+  getComments(String _postId) {
     return getCommentsList(_postId);
   }
-  
+
+  follow(String uid, String url, String followerUId, String username,
+      String followedUsername) {
+    return addFollowers(uid, url, followerUId, username, followedUsername);
+  }
+
+  unFollowUser(String uid, String url, String followerUId, String username) {
+    return unFollow(uid, url, followerUId, username);
+  }
+
+  getFollowers(String uid) {
+    return getAllFollowers(uid);
+  }
+
+  getFollowing(String uid) {
+    return getAllFollowing(uid);
+  }
+
+  addCommunityTopic(String userId, Topic topic) {
+    return addTopic(userId, topic);
+  }
+
+  addCommunityTopicComment(String topicId, Contributions contributions,
+      String userId, String profilePic, String username, File imagefile) {
+    return addTopicComment(
+        topicId, contributions, userId, profilePic, username, imagefile);
+  }
+
+  addCommunityCommentFeedback(
+      String topicId,
+      Contributions contributions,
+      String userId,
+      String profilePic,
+      String username,
+      String contributionId,
+      File imagefile) {
+    return addCommentFeedBack(topicId, contributions, userId, profilePic,
+        username, contributionId, imagefile);
+  }
+
+  getTopics(){
+    return getAllTopics();
+  }
+
+  getContributions(String topicId){
+   return getTopicContributions(topicId);
+  }
 }

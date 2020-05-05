@@ -34,6 +34,8 @@ export const onConversationCreated = functions.firestore.document("Conversations
 
 
 
+
+
 export const onConversationUpdated = functions.firestore.document("Conversations/{chatID}").onUpdate((change, context) => {
     let data = change?.after.data();
     if (data) {
@@ -54,3 +56,5 @@ export const onConversationUpdated = functions.firestore.document("Conversations
     }
     return null;
 });
+
+

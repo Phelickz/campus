@@ -23,8 +23,6 @@ StorageReference _baseRef;
 String _messages = 'messages';
 String _images = 'images';
 
-
-
 Future<bool> addPost(
   Post post,
   String uid,
@@ -60,7 +58,8 @@ Future<bool> addPost(
       'text': post.text,
       'documentID': _documentReference.documentID,
       'createdAt': post.createdAt,
-      'liked': post.liked
+      'liked': post.liked,
+      'location': post.location
     });
   } else {
     var _timeKey = new DateTime.now();
@@ -86,7 +85,8 @@ Future<bool> addPost(
       'text': post.text,
       'documentID': _documentReference.documentID,
       'createdAt': post.createdAt,
-      'liked': post.liked
+      'liked': post.liked,
+      'location': post.location
     });
   }
 
@@ -259,9 +259,8 @@ Future<void> updateProfile(
   });
 }
 
-
 Future<void> addLikes(String uid, String postId, String photoUrl) async {
-  return  _firestore
+  return _firestore
       .collection(_collectionPost)
       .document(postId)
       .collection(_postLikes)
@@ -303,16 +302,65 @@ void removeLikesCount(String postId) async {
   });
 }
 
-Future<bool> addFollowers(
-    String uid, String documentId, String url, String followerUId) async {
-  DocumentReference _documentReference = await _firestore
+Future<void> addFollowers(String uid, String url, String followerUId,
+    String username, String followedUsername) async {
+  await _firestore
       .collection('userData')
       .document(uid)
-      .collection("profile")
-      .document(documentId)
       .collection('followers')
-      .add({'userId': followerUId, 'photoUrl': url});
-  return _documentReference.documentID != null;
+      .document(followerUId)
+      .setData({
+    'userId': followerUId,
+    'uid': uid,
+    'photoUrl': url,
+    'username': username,
+    'timestamp': Timestamp.now()
+  });
+
+  await _firestore
+      .collection('userData')
+      .document(followerUId)
+      .collection('following')
+      .document(uid)
+      .setData({
+    'uid': uid,
+    'photoUrl': url,
+    'username': followedUsername,
+    'timestamp': Timestamp.now()
+  });
+
+  await _firestore.collection('userData').document(followerUId).updateData({
+    'followingList': FieldValue.arrayUnion([uid])
+  });
+
+  await _firestore.collection('userData').document(uid).updateData({
+    'followersList': FieldValue.arrayUnion([followerUId])
+  });
+}
+
+Future<void> unFollow(
+    String uid, String url, String followerUId, String username) async {
+  await _firestore
+      .collection('userData')
+      .document(uid)
+      .collection('followers')
+      .document(followerUId)
+      .delete();
+
+  await _firestore
+      .collection('userData')
+      .document(followerUId)
+      .collection('following')
+      .document(uid)
+      .delete();
+
+  await _firestore.collection('userData').document(followerUId).updateData({
+    'followingList': FieldValue.arrayRemove([uid])
+  });
+
+  await _firestore.collection('userData').document(uid).updateData({
+    'followersList': FieldValue.arrayRemove([followerUId])
+  });
 }
 
 Future updatePost(Post post, String uid) async {
@@ -451,18 +499,18 @@ Stream<List<Post>> getPostList(String uid) {
 Stream<List<User>> getUsersList() {
   return _firestore
       .collection('userData')
-      
       .snapshots()
       .map((QuerySnapshot snapshot) {
     List<User> _postDocs =
         snapshot.documents.map((doc) => User.fromMap(doc)).toList();
-    _postDocs.sort((comp1, comp2) => comp2.createdAt.compareTo(comp1.createdAt));
+    _postDocs
+        .sort((comp1, comp2) => comp2.createdAt.compareTo(comp1.createdAt));
     return _postDocs;
   });
 }
+
 Stream<List<User>> getAllUsers() {
-  var _ref =
-      _firestore.collection('userData').orderBy('createdAt');
+  var _ref = _firestore.collection('userData').orderBy('createdAt');
   return _ref.snapshots().map((_snapshot) {
     return _snapshot.documents.map((_doc) {
       return User.fromMap(_doc);
@@ -470,7 +518,31 @@ Stream<List<User>> getAllUsers() {
   });
 }
 
+Stream<List<Followers>> getAllFollowers(String uid) {
+  var _ref = _firestore
+      .collection('userData')
+      .document(uid)
+      .collection('followers')
+      .orderBy('timestamp');
+  return _ref.snapshots().map((_snapshot) {
+    return _snapshot.documents.map((_doc) {
+      return Followers.fromMap(_doc);
+    }).toList();
+  });
+}
 
+Stream<List<Followers>> getAllFollowing(String uid) {
+  var _ref = _firestore
+      .collection('userData')
+      .document(uid)
+      .collection('following')
+      .orderBy('timestamp');
+  return _ref.snapshots().map((_snapshot) {
+    return _snapshot.documents.map((_doc) {
+      return Followers.fromMap(_doc);
+    }).toList();
+  });
+}
 
 Stream<List<Post>> getAllPostList() {
   return _firestore
@@ -492,7 +564,6 @@ Stream<Conversation> getConversation(String _conversationID) {
   });
 }
 
-
 Stream<List<Comments>> getCommentsList(String _postId) {
   return _firestore
       .collection(_collectionPost)
@@ -502,7 +573,8 @@ Stream<List<Comments>> getCommentsList(String _postId) {
       .map((QuerySnapshot snapshot) {
     List<Comments> _commentDocs =
         snapshot.documents.map((doc) => Comments.fromFirestore(doc)).toList();
-    _commentDocs.sort((comp1, comp2) => comp2.timestamp.toDate().compareTo(comp1.timestamp.toDate()));
+    _commentDocs.sort((comp1, comp2) =>
+        comp2.timestamp.toDate().compareTo(comp1.timestamp.toDate()));
     return _commentDocs;
   });
 }
@@ -535,9 +607,13 @@ Future<void> sendMessage(String _conversationID, Message _message) {
   });
 }
 
-Future<void> addComment(String _postId, String _userId, String _photoUrl, Comments _comments) async {
-  var _ref =
-      _firestore.collection(_collectionPost).document(_postId).collection(_userComments).document();
+Future<void> addComment(String _postId, String _userId, String _photoUrl,
+    Comments _comments) async {
+  var _ref = _firestore
+      .collection(_collectionPost)
+      .document(_postId)
+      .collection(_userComments)
+      .document();
 
   await _firestore
       .collection(_collectionPost)
@@ -553,7 +629,6 @@ Future<void> addComment(String _postId, String _userId, String _photoUrl, Commen
     'timestamp': _comments.timestamp
   });
 }
-
 
 Future<void> addImage(String _uid, File _imagefile, String _conversationID,
     Message _message) async {
@@ -614,12 +689,12 @@ Future<void> addVideo(String _uid, File _videofile, String _conversationID,
       .child(_messages)
       .child(_uid)
       .child(_images);
-  final StorageUploadTask _uploadTask =
-      _postImageRef.child(_filename + "mp4").putFile(_videofile, StorageMetadata(contentType: 'video/mp4'));
+  final StorageUploadTask _uploadTask = _postImageRef
+      .child(_filename + "mp4")
+      .putFile(_videofile, StorageMetadata(contentType: 'video/mp4'));
   var videoUrl = await (await _uploadTask.onComplete).ref.getDownloadURL();
 
   String url = videoUrl.toString();
-
 
   var _messageType = '';
   switch (_message.type) {
@@ -672,4 +747,175 @@ Future<void> createOrGetConversations(String _currentID, String _recepientID,
   } catch (e) {
     print(e);
   }
+}
+
+Future<void> addTopic(String userId, Topic topic) async {
+  final DocumentReference _documentReference =
+      _firestore.collection('community').document();
+
+  await _documentReference.setData({
+    'userId': userId,
+    'topic': topic.topic,
+    'timestamp': topic.timestamp,
+    'documentID': _documentReference.documentID,
+    'contributions': 0,
+    'category': topic.category
+  });
+}
+
+Future<void> addTopicComment(
+    String _topicId,
+    Contributions _contributions,
+    String _userId,
+    String _profilePic,
+    String _username,
+    File imagefile) async {
+  var _ref = _firestore
+      .collection('community')
+      .document(_topicId)
+      .collection('contributions')
+      .document();
+
+  if (_contributions.message == null) {
+    var _timeKey = DateTime.now();
+    final StorageReference _postImageRef =
+        FirebaseStorage.instance.ref().child('Community images');
+    final StorageUploadTask _uploadTask =
+        _postImageRef.child(_timeKey.toString() + "jpg").putFile(imagefile);
+    var imageUrl = await (await _uploadTask.onComplete).ref.getDownloadURL();
+
+    String url = imageUrl.toString();
+
+    await _firestore
+        .collection('community')
+        .document(_topicId)
+        .updateData({'contributions': FieldValue.increment(1)}).catchError((e) {
+      print(e);
+    });
+
+    return _ref.setData({
+      'userId': _userId,
+      'photoUrl': url,
+      'message': _contributions.message,
+      'timestamp': _contributions.timestamp,
+      'profilePic': _profilePic,
+      'username': _username,
+      'documentID': _ref.documentID,
+      'feedback': 0
+    });
+  } else {
+    await _firestore
+        .collection('community')
+        .document(_topicId)
+        .updateData({'contributions': FieldValue.increment(1)}).catchError((e) {
+      print(e);
+    });
+
+    return _ref.setData({
+      'userId': _userId,
+      'photoUrl': imagefile,
+      'message': _contributions.message,
+      'timestamp': _contributions.timestamp,
+      'profilePic': _profilePic,
+      'username': _username,
+      'documentID': _ref.documentID,
+      'feedback': 0
+    });
+  }
+}
+
+Future<void> addCommentFeedBack(
+    String _topicId,
+    Contributions _contributions,
+    String _userId,
+    String _profilePic,
+    String _username,
+    String _contributionId,
+    File imagefile) async {
+  var _ref = _firestore
+      .collection('community')
+      .document(_topicId)
+      .collection('contributions')
+      .document(_contributionId)
+      .collection('feedback')
+      .document();
+
+  if (_contributions.message == null) {
+    var _timeKey = DateTime.now();
+    final StorageReference _postImageRef =
+        FirebaseStorage.instance.ref().child('Community images');
+    final StorageUploadTask _uploadTask =
+        _postImageRef.child(_timeKey.toString() + "jpg").putFile(imagefile);
+    var imageUrl = await (await _uploadTask.onComplete).ref.getDownloadURL();
+
+    String url = imageUrl.toString();
+
+    await _firestore
+        .collection('community')
+        .document(_topicId)
+        .collection('contributions')
+        .document(_contributionId)
+        .updateData({'feedback': FieldValue.increment(1)}).catchError((e) {
+      print(e);
+    });
+
+    return _ref.setData(
+      {
+        'userId': _userId,
+        'photoUrl': url,
+        'message': _contributions.message,
+        'timestamp': _contributions.timestamp,
+        'profilePic': _profilePic,
+        'username': _username,
+        'documentID': _ref.documentID
+      },
+    );
+  } else {
+    await _firestore
+        .collection('community')
+        .document(_topicId)
+        .collection('contributions')
+        .document(_contributionId)
+        .updateData({'feedback': FieldValue.increment(1)}).catchError((e) {
+      print(e);
+    });
+
+    return _ref.setData({
+      'userId': _userId,
+      'photoUrl': imagefile,
+      'message': _contributions.message,
+      'timestamp': _contributions.timestamp,
+      'profilePic': _profilePic,
+      'username': _username,
+      'documentID': _ref.documentID
+    });
+  }
+}
+
+Stream<List<Topic>> getAllTopics() {
+  return _firestore
+      .collection('community')
+      .snapshots()
+      .map((QuerySnapshot snapshot) {
+    List<Topic> _topicDocs =
+        snapshot.documents.map((doc) => Topic.fromMap(doc)).toList();
+    _topicDocs.sort((comp1, comp2) =>
+        comp2.timestamp.toDate().compareTo(comp1.timestamp.toDate()));
+    return _topicDocs;
+  });
+}
+
+Stream<List<Contributions>> getTopicContributions(String _topicId) {
+  return _firestore
+      .collection('community')
+      .document(_topicId)
+      .collection('contributions')
+      .snapshots()
+      .map((QuerySnapshot snapshot) {
+    List<Contributions> _contributionDocs =
+        snapshot.documents.map((doc) => Contributions.fromMap(doc)).toList();
+    // _contributionDocs.sort((comp1, comp2) =>
+    //     comp2.timestamp.toDate().compareTo(comp1.timestamp.toDate()));
+    return _contributionDocs;
+  });
 }
