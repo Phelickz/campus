@@ -235,10 +235,10 @@ class _UserProfileState extends State<UserProfile> {
                                                       },
                                                       icon: Icon(
                                                           _isFollowing == null
-                                                              ? Icons.done
+                                                              ? Icons.person_add
                                                               : _isFollowing
                                                                   ? Icons.done
-                                                                  : Icons.add,
+                                                                  : Icons.person_add,
                                                           color: Colors.white)),
                                                 ),
                                               ),

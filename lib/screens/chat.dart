@@ -85,7 +85,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             decoration: BoxDecoration(
-                color: _darkTheme ? Color(0xff39573B) : Color(0xffF4F5FA),
+                color: _darkTheme ? Colors.grey[800] : Color(0xffF4F5FA),
                 // color: Color(0xffF4F5FA),
                 borderRadius: BorderRadius.circular(30)),
             child: Form(
@@ -103,7 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           _darkTheme ? Colors.white24 : Colors.black,
                       child: Icon(Icons.camera),
                       onPressed: () {
-                        _showDialog(context);
+                        _modalBottomSheetMenu();
                       },
                     ),
                   ),
@@ -184,9 +184,11 @@ class _ChatScreenState extends State<ChatScreen> {
               Timer(
                 Duration(milliseconds: 50),
                 () => {
-                  if(_scrollController.hasClients){
-                  _scrollController
-                      .jumpTo(_scrollController.position.maxScrollExtent)}
+                  if (_scrollController.hasClients)
+                    {
+                      _scrollController
+                          .jumpTo(_scrollController.position.maxScrollExtent)
+                    }
                 },
               );
               var _conversationData = _snapshot.data;
@@ -247,8 +249,8 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Container(
         decoration: BoxDecoration(
             color: isByMe
-                ? _darkTheme ? Color(0xff003300) : Color(0xffff410f)
-                : _darkTheme ? Color(0xff39573B) : Color(0xfffff3f1),
+                ? _darkTheme ? Color(0xff003300) : Color(0xff483D8B)
+                : _darkTheme ? Colors.grey[800] : Color(0xffE6E8EE),
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30),
                 topRight: Radius.circular(30),
@@ -296,15 +298,16 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Container(
         decoration: BoxDecoration(
             color: isByMe
-                ? _darkTheme ? Color(0xff003300) : Color(0xffff410f)
-                : _darkTheme ? Color(0xff39573B) : Color(0xfffff3f1),
+                ? _darkTheme ? Color(0xff003300) : Color(0xff00BFFF)
+                : _darkTheme ? Color(0xff39573B) : Color(0xffE6E8EE),
             borderRadius: BorderRadius.only(
-                // topLeft: Radius.circular(30),
-                // topRight: Radius.circular(30),
-                bottomLeft: isByMe ? Radius.circular(30) : Radius.circular(0),)),
-                // bottomRight:
-                    // isByMe ? Radius.circular(0) : Radius.circular(30))),
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 7),
+              // topLeft: Radius.circular(30),
+              // topRight: Radius.circular(30),
+              bottomLeft: isByMe ? Radius.circular(30) : Radius.circular(0),
+            )),
+        // bottomRight:
+        // isByMe ? Radius.circular(0) : Radius.circular(30))),
+        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 2),
         child: GestureDetector(
           onTap: () {
             Navigator.push(
@@ -354,15 +357,16 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Container(
         decoration: BoxDecoration(
             color: isByMe
-                ? _darkTheme ? Color(0xff003300) : Color(0xffff410f)
-                : _darkTheme ? Color(0xff39573B) : Color(0xfffff3f1),
+                ? _darkTheme ? Color(0xff003300) : Color(0xff00BFFF)
+                : _darkTheme ? Color(0xff39573B) : Color(0xffE6E8EE),
             borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(0),
-                topRight: Radius.circular(0),
-                bottomLeft: isByMe ? Radius.circular(30) : Radius.circular(0),
-                bottomRight:
-                    isByMe ? Radius.circular(0) : Radius.circular(30))),
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 7),
+              topLeft: Radius.circular(0),
+              topRight: Radius.circular(0),
+            )),
+        // bottomLeft: isByMe ? Radius.circular(30) : Radius.circular(0),
+        // bottomRight:
+        // isByMe ? Radius.circular(0) : Radius.circular(30))),
+        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 2),
         child: GestureDetector(
           onTap: () {
             Navigator.push(context,
@@ -376,12 +380,13 @@ class _ChatScreenState extends State<ChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  color: Colors.black,
+                    color: Colors.black,
                     height: MediaQuery.of(context).size.height * 0.30,
                     width: MediaQuery.of(context).size.width * 0.60,
                     child: Icon(
                       FontAwesomeIcons.play,
                       size: 50,
+                      color: _darkTheme ? Colors.white : Colors.white,
                     )),
                 Padding(
                   padding: const EdgeInsets.only(right: 0.0),
@@ -472,87 +477,159 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _showDialog(BuildContext context) {
-    showDialog(
+  void _modalBottomSheetMenu() {
+    showModalBottomSheet(
+        backgroundColor: _darkTheme? Colors.grey[800] : Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
         context: context,
-        builder: (BuildContext context) {
+        builder: (builder) {
           final _auth =
               Provider.of<AuthenticationState>(context, listen: false);
-          return Padding(
-            padding: const EdgeInsets.all(0.0),
-            child: AlertDialog(
-              title: Text(
-                'Select',
-                style: TextStyle(
-                    fontFamily: 'WorkSansSemiBold',
-                    fontSize: 25,
-                    color: Colors.black),
-              ),
-              content: Container(
-                height: 65,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    InkWell(
-                      child: Text(
-                        'Share Photo',
-                        style: TextStyle(
-                            fontSize: 20, fontFamily: 'WorkSansSemiBold'),
-                      ),
-                      onTap: () async {
-                        File _image = await ImagePicker.pickImage(
-                            source: ImageSource.gallery);
-                        if (_image != null) {
-                          _auth.sendAPhoto(
-                            this.widget.uid,
-                            _image,
-                            this.widget._conversationID,
-                            Message(
-                                senderID: this.widget.uid,
-                                timestamp: Timestamp.now(),
-                                type: MessageType.Image),
-                          );
-                        }
-                      },
-                    ),
-                    SizedBox(height: 15),
-                    InkWell(
-                      child: Text(
-                        'Share Video',
-                        style: TextStyle(
-                            fontSize: 20, fontFamily: 'WorkSansSemiBold'),
-                      ),
-                      onTap: () async {
-                        File _video = await ImagePicker.pickVideo(
-                            source: ImageSource.gallery);
-                        if (_video != null) {
-                          _auth.sendAVideo(
-                            this.widget.uid,
-                            _video,
-                            this.widget._conversationID,
-                            Message(
-                                senderID: this.widget.uid,
-                                timestamp: Timestamp.now(),
-                                type: MessageType.Video),
-                          );
-                        }
-                      },
-                    )
-                  ],
+          return new Container(
+            padding: EdgeInsets.only(top: 10),
+            height: MediaQuery.of(context).size.height * 0.2,
+            // color: Color(0xFF737373), //could change this to Color(0xFF737373),
+            //so you don't have to change MaterialApp canvasColor
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                  leading: new Icon(
+                    Icons.photo,
+                    color: _darkTheme? Colors.white: Colors.black,
+                  ),
+                  title: new Text(
+                    'Share Photo',
+                    style: TextStyle(color: _darkTheme? Colors.white: Colors.black,),
+                  ),
+                  onTap: () async {
+                    File _image = await ImagePicker.pickImage(
+                        source: ImageSource.gallery);
+                    if (_image != null) {
+                      _auth.sendAPhoto(
+                        this.widget.uid,
+                        _image,
+                        this.widget._conversationID,
+                        Message(
+                            senderID: this.widget.uid,
+                            timestamp: Timestamp.now(),
+                            type: MessageType.Image),
+                      );
+                    }
+                  },
                 ),
-              ),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Close'))
+                new ListTile(
+                  leading: new Icon(
+                    Icons.videocam,
+                    color: _darkTheme? Colors.white: Colors.black,
+                  ),
+                  title: new Text(
+                    'Share Video',
+                    style: TextStyle(color: _darkTheme? Colors.white: Colors.black,),
+                  ),
+                  onTap: () async {
+                    File _video = await ImagePicker.pickVideo(
+                        source: ImageSource.gallery);
+                    if (_video != null) {
+                      _auth.sendAVideo(
+                        this.widget.uid,
+                        _video,
+                        this.widget._conversationID,
+                        Message(
+                            senderID: this.widget.uid,
+                            timestamp: Timestamp.now(),
+                            type: MessageType.Video),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           );
         });
   }
+
+  // void _showDialog(BuildContext context) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         final _auth =
+  //             Provider.of<AuthenticationState>(context, listen: false);
+  //         return Padding(
+  //           padding: const EdgeInsets.all(0.0),
+  //           child: AlertDialog(
+  //             title: Text(
+  //               'Select',
+  //               style: TextStyle(
+  //                   fontFamily: 'WorkSansSemiBold',
+  //                   fontSize: 25,
+  //                   color: Colors.black),
+  //             ),
+  //             content: Container(
+  //               height: 65,
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: <Widget>[
+  //                   InkWell(
+  //                     child: Text(
+  //                       'Share Photo',
+  //                       style: TextStyle(
+  //                           fontSize: 20, fontFamily: 'WorkSansSemiBold'),
+  //                     ),
+  //                     onTap: () async {
+  //                       File _image = await ImagePicker.pickImage(
+  //                           source: ImageSource.gallery);
+  //                       if (_image != null) {
+  //                         _auth.sendAPhoto(
+  //                           this.widget.uid,
+  //                           _image,
+  //                           this.widget._conversationID,
+  //                           Message(
+  //                               senderID: this.widget.uid,
+  //                               timestamp: Timestamp.now(),
+  //                               type: MessageType.Image),
+  //                         );
+  //                       }
+  //                     },
+  //                   ),
+  //                   SizedBox(height: 15),
+  //                   InkWell(
+  //                     child: Text(
+  //                       'Share Video',
+  //                       style: TextStyle(
+  //                           fontSize: 20, fontFamily: 'WorkSansSemiBold'),
+  //                     ),
+  //                     onTap: () async {
+  //                       File _video = await ImagePicker.pickVideo(
+  //                           source: ImageSource.gallery);
+  //                       if (_video != null) {
+  //                         _auth.sendAVideo(
+  //                           this.widget.uid,
+  //                           _video,
+  //                           this.widget._conversationID,
+  //                           Message(
+  //                               senderID: this.widget.uid,
+  //                               timestamp: Timestamp.now(),
+  //                               type: MessageType.Video),
+  //                         );
+  //                       }
+  //                     },
+  //                   )
+  //                 ],
+  //               ),
+  //             ),
+  //             actions: <Widget>[
+  //               FlatButton(
+  //                   onPressed: () {
+  //                     Navigator.pop(context);
+  //                   },
+  //                   child: Text('Close'))
+  //             ],
+  //           ),
+  //         );
+  //       });
+  // }
 }
 
 class Validator {

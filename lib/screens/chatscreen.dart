@@ -1,10 +1,12 @@
 import 'package:campus/data/data.dart';
 import 'package:campus/models/chat_model.dart';
 import 'package:campus/models/story_model.dart';
+import 'package:campus/screens/followingList.dart';
 import 'package:campus/services/model.dart';
 import 'package:campus/services/theme_notifier.dart';
 import 'package:campus/state/authstate.dart';
 import 'package:campus/utils/theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -39,7 +41,7 @@ class _HomeState extends State<Home> {
     return Consumer<AuthenticationState>(
       builder: (context, _authState, child) {
         return Scaffold(
-          backgroundColor: Color(0xff171719),
+          backgroundColor: _darkTheme ? Color(0xff171719) : Colors.grey[900],
           body: SingleChildScrollView(
             child: Container(
               child: Column(
@@ -71,14 +73,23 @@ class _HomeState extends State<Home> {
                               fontWeight: FontWeight.w600),
                         ),
                         Spacer(),
-                        Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Color(0xff444446),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.white,
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        FollowingList(this.widget._uid)));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: Color(0xff444446),
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
                           ),
                         )
                       ],
@@ -92,15 +103,44 @@ class _HomeState extends State<Home> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 24),
                     height: 120,
-                    child: ListView.builder(
-                        itemCount: stories.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return StoryTile(
-                            imgUrl: stories[index].imgUrl,
-                            username: stories[index].username,
-                          );
+                    child: StreamBuilder<List<Followers>>(
+                        stream: _authState.getFollowing(this.widget._uid),
+                        builder: (context, snapshot) {
+                          return snapshot.hasData
+                              ? snapshot.data.isNotEmpty
+                                  ? ListView.builder(
+                                      itemCount: snapshot.data.length,
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder: (context, index) {
+                                        var _item = snapshot.data[index];
+                                        return InkWell(
+                                          splashColor: Colors.transparent,
+                                          onTap: () {
+                                            _authState.createNewMessage(
+                                                this.widget._uid, _item.uid,
+                                                (String _conversationID) {
+                                              Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        ChatScreen(
+                                                            this.widget._uid,
+                                                            _conversationID,
+                                                            this.widget._uid,
+                                                            _item.photoUrl,
+                                                            _item.username)),
+                                              );
+                                            });
+                                          },
+                                          child: StoryTile(
+                                            imgUrl: _item.photoUrl,
+                                            username: _item.username,
+                                          ),
+                                        );
+                                      })
+                                  : Text('People you follow will appear here')
+                              : CircularProgressIndicator();
                         }),
                   ),
 
@@ -238,7 +278,7 @@ class StoryTile extends StatelessWidget {
           Text(
             username,
             style: TextStyle(
-                color: Color(0xff78778a),
+                color: Colors.white70,
                 fontSize: 16,
                 fontWeight: FontWeight.w600),
           )

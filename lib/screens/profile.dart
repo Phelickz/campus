@@ -576,6 +576,7 @@ class _ProfileState extends State<Profile> {
                         return snapshot.hasData
                             ? _data.isNotEmpty
                                 ? GridView.builder(
+                                  
                                     shrinkWrap: true,
                                     itemCount: _data.length,
                                     padding: EdgeInsets.only(top: 0),
@@ -593,11 +594,12 @@ class _ProfileState extends State<Profile> {
                                               _data[index].photoUrl,
                                               fit: BoxFit.cover,
                                             )
-                                          : Material(
+                                          : Container(
+                                            color: Colors.black,
                                               child: IconButton(
                                                   icon: Icon(
                                                     FontAwesomeIcons.play,
-                                                    color: Colors.black,
+                                                    color: Colors.white,
                                                     size: 50,
                                                   ),
                                                   onPressed: () {
