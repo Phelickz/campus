@@ -155,8 +155,8 @@ class AuthenticationState with ChangeNotifier {
     notifyListeners();
   }
 
-  postLikes(String uid, String postId, String photoUrl) async {
-    await addLikes(uid, postId, photoUrl);
+  postLikes(String uid, String postId, String photoUrl, String username) async {
+    await addLikes(uid, postId, photoUrl, username);
     notifyListeners();
   }
 

@@ -375,3 +375,16 @@ class Contributions {
       feedback: doc['feedback'],
       documentID: doc['documentID']);
 }
+
+class Notifications {
+  String photoUrl;
+  Timestamp timestamp;
+  String message;
+
+  Notifications({this.message, this.photoUrl, this.timestamp});
+
+  factory Notifications.fromMap(dynamic doc) => Notifications(
+      message: doc['message'],
+      timestamp: doc['timestamp'],
+      photoUrl: doc['photoUrl']);
+}

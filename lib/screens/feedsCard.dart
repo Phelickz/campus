@@ -219,7 +219,7 @@ class _FeedCardState extends State<FeedCard> {
                                         // setLiked(true);
                                         _auth.updateLikess(this.widget._item.documentID);
                                         _auth.postLikes(_uid, this.widget._item.documentID,
-                                            user.photoUrl);
+                                            user.photoUrl, user.displayName);
                                       } else {
                                         // counter = counter + 1;
                                         // setLiked(false);
