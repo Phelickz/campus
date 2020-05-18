@@ -93,18 +93,32 @@ class _UserProfileState extends State<UserProfile> {
   Widget _pictureContainer() {
     return Positioned(
       child: Builder(builder: (BuildContext _context) {
-        return Hero(
-          tag: _uid,
-          child: Material(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.6,
-              decoration: BoxDecoration(
-                  color: Colors.red,
-                  image: DecorationImage(image: NetworkImage(_profileUrl))),
-            ),
-          ),
-        );
+        return StreamBuilder(
+            stream: getData(_context),
+            builder: (_context, snapshot) {
+             return snapshot.hasData
+                  ? ListView.builder(
+                      itemCount: snapshot.data.documents.length,
+                      itemBuilder: (_context, index) {
+                        var _item = snapshot.data.documents[index];
+                        return Hero(
+                          tag: _uid,
+                          child: Material(
+                            child: Container(
+                              width: MediaQuery.of(_context).size.width,
+                              height: MediaQuery.of(_context).size.height * 0.6,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                image: DecorationImage(
+                                    image: NetworkImage(_item['photoUrl']),
+                                    fit: BoxFit.cover),
+                              ),
+                            ),
+                          ),
+                        );
+                      })
+                  : CircularProgressIndicator();
+            });
       }),
     );
   }
@@ -200,7 +214,9 @@ class _UserProfileState extends State<UserProfile> {
                                                                 user
                                                                     .displayName,
                                                                 _item[
-                                                                    'username']);
+                                                                    'username'],
+                                                                _item[
+                                                                    'photoUrl']);
 
                                                             Scaffold.of(context)
                                                                 .showSnackBar(SnackBar(
@@ -238,7 +254,8 @@ class _UserProfileState extends State<UserProfile> {
                                                               ? Icons.person_add
                                                               : _isFollowing
                                                                   ? Icons.done
-                                                                  : Icons.person_add,
+                                                                  : Icons
+                                                                      .person_add,
                                                           color: Colors.white)),
                                                 ),
                                               ),
@@ -302,6 +319,9 @@ class _UserProfileState extends State<UserProfile> {
                               width: MediaQuery.of(context).size.width * 0.65,
                               height: MediaQuery.of(context).size.width * 0.3,
                               child: Card(
+                                  color: _darkTheme
+                                      ? Colors.grey[800]
+                                      : Colors.white,
                                   elevation: 10,
                                   child: Padding(
                                     padding: EdgeInsets.only(top: 20),

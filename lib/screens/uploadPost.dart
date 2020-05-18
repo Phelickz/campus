@@ -14,6 +14,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import '../services/theme_notifier.dart';
+import '../utils/theme.dart';
 
 class UploadPost extends StatefulWidget {
   final _profilePic;
@@ -25,6 +27,7 @@ class UploadPost extends StatefulWidget {
 }
 
 class _UploadPostState extends State<UploadPost> {
+  var _darkTheme;
   final _profilePic;
   final _username;
   _UploadPostState(this._profilePic, this._username);
@@ -211,11 +214,14 @@ class _UploadPostState extends State<UploadPost> {
   @override
   Widget build(BuildContext context) {
     retrieveLostData();
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    _darkTheme = (themeNotifier.getTheme() == darkTheme);
     // SnackBarService.instance.buildContext = context;
     return Consumer<AuthenticationState>(builder: (builder, authState, child) {
       return Scaffold(
+        backgroundColor: _darkTheme ? Colors.grey[900] : Colors.white,
         bottomNavigationBar: BottomAppBar(
-          color: Colors.red,
+          color: _darkTheme ? Colors.black : Colors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
@@ -227,13 +233,14 @@ class _UploadPostState extends State<UploadPost> {
               IconButton(
                   icon: Icon(Icons.videocam),
                   onPressed: () {
-                   _showSecondDialog(context);
+                    _showSecondDialog(context);
                   })
             ],
           ),
         ),
         appBar: AppBar(
-          backgroundColor: Colors.red,
+                    backgroundColor: _darkTheme ? Colors.black : Colors.white,
+
           title: Text('Upload a post'),
           centerTitle: true,
           actions: <Widget>[
@@ -246,41 +253,44 @@ class _UploadPostState extends State<UploadPost> {
 
                   final form = formKey.currentState;
                   form.save();
-                  _imageFile != null ?
-                  authState.addPosts(
-                      Post(
-                          text: _textEditingController.text.isEmpty
-                              ? ''
-                              : _textEditingController.text,
-                          likes: 0,
-                          comments: 0,
-                          createdAt: Timestamp.now(),
-                          date: DateTime.now(),
-                          time: DateTime.now(),
-                          liked: false,
-                          location: _currentAddress ?? ''),
-                      _uid,
-                      _imageFile,
-                      _profilePic,
-                      _username,
-                      null) : authState.addPosts(
-                      Post(
-                          text: _textEditingController.text.isEmpty
-                              ? ''
-                              : _textEditingController.text,
-                          likes: 0,
-                          comments: 0,
-                          createdAt: Timestamp.now(),
-                          date: DateTime.now(),
-                          time: DateTime.now(),
-                          liked: false,
-                          location: _currentAddress ?? ''),
-                      _uid,
-                      null,
-                      _profilePic,
-                      _username,
-                      _videoFile);
-                      Scaffold.of(context).showSnackBar(SnackBar(backgroundColor: Colors.green ,content: Text('Post Upload Successful!')));
+                  _imageFile != null
+                      ? authState.addPosts(
+                          Post(
+                              text: _textEditingController.text.isEmpty
+                                  ? ''
+                                  : _textEditingController.text,
+                              likes: 0,
+                              comments: 0,
+                              createdAt: Timestamp.now(),
+                              date: DateTime.now(),
+                              time: DateTime.now(),
+                              liked: false,
+                              location: _currentAddress ?? ''),
+                          _uid,
+                          _imageFile,
+                          _profilePic,
+                          _username,
+                          null)
+                      : authState.addPosts(
+                          Post(
+                              text: _textEditingController.text.isEmpty
+                                  ? ''
+                                  : _textEditingController.text,
+                              likes: 0,
+                              comments: 0,
+                              createdAt: Timestamp.now(),
+                              date: DateTime.now(),
+                              time: DateTime.now(),
+                              liked: false,
+                              location: _currentAddress ?? ''),
+                          _uid,
+                          null,
+                          _profilePic,
+                          _username,
+                          _videoFile);
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text('Post Upload Successful!')));
                   Navigator.pop(context);
                 })
           ],
@@ -318,64 +328,96 @@ class _UploadPostState extends State<UploadPost> {
                           width: double.infinity,
                           child: Form(
                               key: formKey,
-                              child: TextFormField(
-                                maxLines: 3,
-                                controller: _textEditingController,
-                                decoration: InputDecoration(
-                                    fillColor: Colors.white,
-                                    filled: true,
-                                    hintText: 'Say Something...'),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    'Caption',
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontFamily: 'WorkSansSemiBold'),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    child: TextFormField(
+                                      maxLines: 3,
+                                      controller: _textEditingController,
+                                      decoration: InputDecoration(
+                                          fillColor: Colors.white,
+                                          filled: true,
+                                          hintText: 'Say Something...',
+                                          hintStyle:
+                                              TextStyle(color: Colors.black)),
+                                    ),
+                                  ),
+                                ],
                               )),
                         ),
                       ),
-                      FlatButton(onPressed: (){
-                        _getCurrentLocation();
-                      }, child: Text('Location'))
-                    ],
-                  );
-                }else{
-                  if(_videoFile != null){
-                    return ListView(
-                    children: <Widget>[
-                      Container(
-                        height: MediaQuery.of(context).size.height * 0.3,
-                        width: MediaQuery.of(context).size.width,
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: mounted? Chewie(
-                            controller: ChewieController(
-                              videoPlayerController: VideoPlayerController.file(_videoFile),
-                              aspectRatio: 3/2,
-                              autoPlay: true,
-                              looping: true,
-                            ),
-                          ) : Container(),
-                        ),
-                      ),
-                     
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Container(
-                          width: double.infinity,
-                          child: Form(
-                              key: formKey,
-                              child: TextFormField(
-                                maxLines: 3,
-                                controller: _textEditingController,
-                                decoration: InputDecoration(
-                                    fillColor: Colors.grey[800],
-                                    filled: true,
-                                    
-                                    hintText: 'Say Something...'),
-                              )),
-                        ),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: FlatButton(
+                            onPressed: () {
+                              _getCurrentLocation(context);
+                            },
+                            child: Text('Add Location ?')),
                       )
                     ],
                   );
+                } else {
+                  if (_videoFile != null) {
+                    return ListView(
+                      children: <Widget>[
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.3,
+                          width: MediaQuery.of(context).size.width,
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: mounted
+                                ? Chewie(
+                                    controller: ChewieController(
+                                      videoPlayerController:
+                                          VideoPlayerController.file(
+                                              _videoFile),
+                                      aspectRatio: 3 / 2,
+                                      autoPlay: true,
+                                      looping: true,
+                                    ),
+                                  )
+                                : Container(),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            width: double.infinity,
+                            child: Form(
+                                key: formKey,
+                                child: TextFormField(
+                                  maxLines: 3,
+                                  controller: _textEditingController,
+                                  decoration: InputDecoration(
+                                      fillColor: Colors.grey[800],
+                                      filled: true,
+                                      hintText: 'Say Something...'),
+                                )),
+                          ),
+                        ),
+                        Align(
+                        alignment: Alignment.bottomLeft,
+                        child: FlatButton(
+                            onPressed: () {
+                              _getCurrentLocation(context);
+                            },
+                            child: Text('Add Location ?')),
+                      )
+                      ],
+                    );
                   }
                   return SizedBox();
                 }
-                 
               }
               return CircularProgressIndicator();
             }),
@@ -383,7 +425,7 @@ class _UploadPostState extends State<UploadPost> {
     });
   }
 
-  _getCurrentLocation() {
+  _getCurrentLocation(context) {
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
@@ -391,13 +433,13 @@ class _UploadPostState extends State<UploadPost> {
         _currentPosition = position;
       });
 
-      _getAddressFromLatLng();
+      _getAddressFromLatLng(context);
     }).catchError((e) {
       print(e);
     });
   }
 
-  _getAddressFromLatLng() async {
+  _getAddressFromLatLng(context) async {
     try {
       List<Placemark> p = await geolocator.placemarkFromCoordinates(
           _currentPosition.latitude, _currentPosition.longitude);
@@ -409,8 +451,19 @@ class _UploadPostState extends State<UploadPost> {
             "${place.locality}, ${place.postalCode}, ${place.country}";
       });
       print(_currentAddress);
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Your current location is set to ${_currentAddress}',
+            style: TextStyle(color: Colors.green),
+          ),
+        ),
+      );
     } catch (e) {
       print(e);
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(e.message, style: TextStyle(color: Colors.red),),
+      ));
     }
   }
 }

@@ -134,6 +134,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                       },
                       child: Container(
                         child: Card(
+                          color: _darkTheme ? Colors.grey : Colors.white,
                           elevation: 10,
                           child: ListTile(
                             title: Text(

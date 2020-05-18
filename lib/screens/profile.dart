@@ -339,9 +339,9 @@ class _ProfileState extends State<Profile> {
                                                                     CupertinoPageRoute(
                                                                         builder: (context) => ProfileEdit(
                                                                             EditMode.Editing,
-                                                                            item['username'],
                                                                             item['bio'],
                                                                             item['email'],
+                                                                            item['username'],
                                                                             item['phone'],
                                                                             item['photoUrl'])));
                                                               }),
@@ -576,7 +576,6 @@ class _ProfileState extends State<Profile> {
                         return snapshot.hasData
                             ? _data.isNotEmpty
                                 ? GridView.builder(
-                                  
                                     shrinkWrap: true,
                                     itemCount: _data.length,
                                     padding: EdgeInsets.only(top: 0),
@@ -595,7 +594,7 @@ class _ProfileState extends State<Profile> {
                                               fit: BoxFit.cover,
                                             )
                                           : Container(
-                                            color: Colors.black,
+                                              color: Colors.black,
                                               child: IconButton(
                                                   icon: Icon(
                                                     FontAwesomeIcons.play,

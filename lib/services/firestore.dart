@@ -213,8 +213,6 @@ Future<bool> addProfilePicture(String uid, File photo) async {
   // );
   _firestore
       .collection('userData')
-      .document(uid)
-      .collection('profile')
       .where('uid', isEqualTo: uid)
       .getDocuments()
       .then((QuerySnapshot querySnapshot) {
@@ -231,6 +229,22 @@ Future<bool> addProfilePicture(String uid, File photo) async {
   user.updateProfile(userUpdateInfo).catchError((e) {
     print(e);
   });
+
+  await _firestore
+      .collection('posts')
+      .where('userId', isEqualTo: uid)
+      .getDocuments()
+      .then((QuerySnapshot querySnapshot) {
+    querySnapshot.documents.forEach((DocumentSnapshot documentSnapshot) {
+      documentSnapshot.reference
+          .updateData({'profilePic': _url}).catchError((e) {
+        print(e);
+      });
+    });
+  }).catchError((e) {
+    print(e);
+  });
+
   print('update success');
   return user != null;
 }
@@ -239,8 +253,6 @@ Future<void> updateProfile(
     String uid, String username, String email, String bio, String phone) async {
   _firestore
       .collection('userData')
-      .document(uid)
-      .collection('profile')
       .where('uid', isEqualTo: uid)
       .getDocuments()
       .then((QuerySnapshot querySnapshot) {
@@ -259,7 +271,8 @@ Future<void> updateProfile(
   });
 }
 
-Future<void> addLikes(String uid, String postId, String photoUrl, String username) async {
+Future<void> addLikes(
+    String uid, String postId, String photoUrl, String username) async {
   await _firestore
       .collection(_collectionPost)
       .document(postId)
@@ -272,10 +285,10 @@ Future<void> addLikes(String uid, String postId, String photoUrl, String usernam
       .document(uid)
       .collection('notifications')
       .add({
-        'timestamp': Timestamp.now(),
-        'photoUrl': url,
-        'message': username +' liked your post',
-      });
+    'timestamp': Timestamp.now(),
+    'photoUrl': photoUrl,
+    'message': username + ' liked your post',
+  });
 }
 
 void removeLikes(String uid, String postId) async {
@@ -313,7 +326,7 @@ void removeLikesCount(String postId) async {
 }
 
 Future<void> addFollowers(String uid, String url, String followerUId,
-    String username, String followedUsername) async {
+    String username, String followedUsername, String followedUrl) async {
   await _firestore
       .collection('userData')
       .document(uid)
@@ -332,10 +345,10 @@ Future<void> addFollowers(String uid, String url, String followerUId,
       .document(uid)
       .collection('notifications')
       .add({
-        'timestamp': Timestamp.now(),
-        'photoUrl': url,
-        'message': username +' just followed you',
-      });
+    'timestamp': Timestamp.now(),
+    'photoUrl': url,
+    'message': username + ' just followed you',
+  });
 
   await _firestore
       .collection('userData')
@@ -344,7 +357,7 @@ Future<void> addFollowers(String uid, String url, String followerUId,
       .document(uid)
       .setData({
     'uid': uid,
-    'photoUrl': url,
+    'photoUrl': followedUrl,
     'username': followedUsername,
     'timestamp': Timestamp.now()
   });

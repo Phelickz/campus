@@ -337,7 +337,7 @@ class ChatTile extends StatelessWidget {
                 height: 60,
                 width: 60,
                 fit: BoxFit.cover,
-                color: _darkTheme ? Colors.white : Colors.black,
+                // color: _darkTheme ? Colors.white : Colors.black,
               ),
             ),
             SizedBox(

@@ -26,7 +26,7 @@ dependencies:
   provider: 
   firebase_auth:
   google_sign_in:
-  cloud_firestore:
+  cloud_firestore: ^0.13.5
   auto_size_text: ^2.1.0
   image_picker:
   image_cropper:
@@ -37,7 +37,7 @@ dependencies:
   timeago: ^2.0.26
   animated_text_kit:
   chewie:
-  video_player:
+  video_player: ^0.10.9+2
   page_transition:
   flutter_spinkit:
   shared_preferences:
@@ -47,6 +47,7 @@ dependencies:
   bot_toast:
   path_provider: ^1.6.7
   bubble:
+  progress_dialog:
 
 
   

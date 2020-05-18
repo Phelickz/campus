@@ -195,7 +195,7 @@ class _MatchScreenState extends State<MatchScreen> {
                                         : Colors.white,
                                     child: Image.network(
                                       _item['photoUrl'],
-                                      fit: BoxFit.contain,
+                                      fit: BoxFit.cover,
                                     ),
                                   )),
                             ),

@@ -15,7 +15,6 @@ import 'profile.dart';
 import 'usersProfile.dart';
 
 class FeedCard extends StatefulWidget {
-
   final _item;
   final newtime;
   FeedCard(this._item, this.newtime);
@@ -24,10 +23,8 @@ class FeedCard extends StatefulWidget {
 }
 
 class _FeedCardState extends State<FeedCard> {
-
   bool _liked;
   var _darkTheme;
-
 
   @override
   void initState() {
@@ -41,15 +38,13 @@ class _FeedCardState extends State<FeedCard> {
     setState(() => this._liked = liked);
   }
 
-
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       decoration: new BoxDecoration(
-      color: Colors.white54,
-
+          color: Colors.white54,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             new BoxShadow(
@@ -95,7 +90,8 @@ class _FeedCardState extends State<FeedCard> {
                       child: CircleAvatar(
                         backgroundColor:
                             _darkTheme ? Colors.white : Colors.white,
-                        backgroundImage: NetworkImage(this.widget._item.profilePic),
+                        backgroundImage:
+                            NetworkImage(this.widget._item.profilePic),
                         radius: 30,
                       ),
                     ),
@@ -148,7 +144,9 @@ class _FeedCardState extends State<FeedCard> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0)),
                     elevation: 0,
-                    color: this.widget._item.photoUrl == null ? Colors.black : Colors.white,
+                    color: this.widget._item.photoUrl == null
+                        ? Colors.black
+                        : Colors.white,
                     child: this.widget._item.photoUrl != null
                         ? Image.network(
                             this.widget._item.photoUrl,
@@ -191,48 +189,52 @@ class _FeedCardState extends State<FeedCard> {
                         Row(
                           children: <Widget>[
                             IconButton(
-                                icon: Icon(
-                                 _liked == null ? Icons.favorite_border : _liked
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: _liked == null ? Colors.grey : _liked
-                                      ? Colors.red
-                                      : Colors.grey,
-                                ),
-                                onPressed: () async {
-                                  final _auth =
-                                      Provider.of<AuthenticationState>(context,
-                                          listen: false);
-                                  final _uid =
-                                      await Provider.of<AuthenticationState>(
-                                              context,
-                                              listen: false)
-                                          .currentUserId();
-
-                                  await FirebaseAuth.instance
-                                      .currentUser()
-                                      .then((user) {
-                                    setState(() {
-                                      _liked = !_liked;
-                                      if (_liked) {
-                                        // counter = counter + 2;
-                                        // setLiked(true);
-                                        _auth.updateLikess(this.widget._item.documentID);
-                                        _auth.postLikes(_uid, this.widget._item.documentID,
-                                            user.photoUrl, user.displayName);
-                                      } else {
-                                        // counter = counter + 1;
-                                        // setLiked(false);
-                                        _auth.removeLikesId(
-                                            _uid, this.widget._item.documentID);
-                                        _auth.reduceLikes(this.widget._item.documentID);
-                                      }
-                                    });
+                              icon: Icon(
+                                _liked == null
+                                    ? Icons.favorite_border
+                                    : _liked
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                color: _liked == null
+                                    ? Colors.grey
+                                    : _liked ? Colors.red : Colors.grey,
+                              ),
+                              onPressed: () async {
+                                final _auth = Provider.of<AuthenticationState>(
+                                    context,
+                                    listen: false);
+                                final _uid =
+                                    await Provider.of<AuthenticationState>(
+                                            context,
+                                            listen: false)
+                                        .currentUserId();
+                                await FirebaseAuth.instance
+                                    .currentUser()
+                                    .then((user) {
+                                  setState(() {
+                                    _liked = !_liked;
+                                    if (_liked) {
+                                      _auth.updateLikess(
+                                          this.widget._item.documentID);
+                                      _auth.postLikes(
+                                          _uid,
+                                          this.widget._item.documentID,
+                                          user.photoUrl,
+                                          user.displayName);
+                                    } else {
+                                      _auth.removeLikesId(
+                                          _uid, this.widget._item.documentID);
+                                      _auth.reduceLikes(
+                                          this.widget._item.documentID);
+                                    }
                                   });
-                                  var prefs =
-                                      await SharedPreferences.getInstance();
-                                  prefs.setBool(this.widget._item.documentID, _liked);
-                                }),
+                                });
+                                var prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.setBool(
+                                    this.widget._item.documentID, _liked);
+                              },
+                            ),
                             Text(
                               '${this.widget._item.likes == null ? 0 : this.widget._item.likes} likes',
                               style: TextStyle(
@@ -254,7 +256,8 @@ class _FeedCardState extends State<FeedCard> {
                                   PageTransition(
                                       duration: Duration(milliseconds: 700),
                                       child: CommentScreen(
-                                          this.widget._item.username, this.widget._item.documentID),
+                                          this.widget._item.username,
+                                          this.widget._item.documentID),
                                       type: PageTransitionType.downToUp),
                                 );
                               },
@@ -266,7 +269,8 @@ class _FeedCardState extends State<FeedCard> {
                                   PageTransition(
                                       duration: Duration(milliseconds: 700),
                                       child: CommentScreen(
-                                          this.widget._item.username, this.widget._item.documentID),
+                                          this.widget._item.username,
+                                          this.widget._item.documentID),
                                       type: PageTransitionType.downToUp),
                                 );
                               },

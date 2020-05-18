@@ -9,6 +9,10 @@ import '../screens/profile.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../screens/viewPhotoInChat.dart';
+import 'dart:async';
+import '../services/theme_notifier.dart';
+import '../utils/theme.dart';
+
 
 class ContributionScreen extends StatefulWidget {
   final _topicId;
@@ -19,10 +23,14 @@ class ContributionScreen extends StatefulWidget {
 }
 
 class _ContributionScreenState extends State<ContributionScreen> {
+  var _darkTheme;
+  ScrollController _scrollController = ScrollController();
   final _formKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Scaffold(
       appBar: AppBar(
         title: Text(this.widget._topic),
@@ -47,12 +55,23 @@ class _ContributionScreenState extends State<ContributionScreen> {
           child: StreamBuilder<List<Contributions>>(
               stream: _authState.getContributions(this.widget._topicId),
               builder: (_context, _snapshot) {
+                Timer(
+                Duration(milliseconds: 50),
+                () => {
+                  if (_scrollController.hasClients)
+                    {
+                      _scrollController
+                          .jumpTo(_scrollController.position.maxScrollExtent)
+                    }
+                },
+              );
                 return _snapshot.hasData
                     ? _snapshot.data.isNotEmpty
                         ? ListView.builder(
                             itemCount: _snapshot.data.length,
                             itemBuilder: (BuildContext _context, int index) {
                               return Card(
+                                color: _darkTheme ? Colors.grey : Colors.white,
                                   child: ListTile(
                                 trailing: Text(
                                   timeago.format(

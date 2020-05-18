@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:campus/screens/splash.dart';
 import 'package:campus/state/userState.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => UserNotifier()),
         ],
         child: MaterialApp(
+          builder: BotToastInit(),
             theme: themeNotifier.getTheme(),
             home: SplashScreen()));
   }

@@ -65,12 +65,12 @@ class AuthenticationState with ChangeNotifier {
     return await signUp(email, password, username, phone);
   }
 
-  login(
+ Future login(
     email,
     password,
-  ) {
+  ) async {
     try {
-      signIn(
+     await signIn(
         email,
         password,
       );
@@ -221,8 +221,8 @@ class AuthenticationState with ChangeNotifier {
   }
 
   follow(String uid, String url, String followerUId, String username,
-      String followedUsername) {
-    return addFollowers(uid, url, followerUId, username, followedUsername);
+      String followedUsername, String followedUrl) {
+    return addFollowers(uid, url, followerUId, username, followedUsername, followedUrl);
   }
 
   unFollowUser(String uid, String url, String followerUId, String username) {
